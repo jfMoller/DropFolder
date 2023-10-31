@@ -16,14 +16,26 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name = "email", unique = true, nullable = false)
-    private String email;
+    @Column(name = "username", unique = true, nullable = false)
+    private String username;
 
     @Column(name = "password", nullable = false)
     private String password;
 
-    public User(String email, String password) {
-        this.email = email;
+    public User(String username, String password) {
+        this.username = username;
         this.password = password;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
     }
 }
