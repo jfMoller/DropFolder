@@ -14,36 +14,35 @@ import org.springframework.http.ResponseEntity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+
 public class UserSignUpFeature {
 
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
     private UserService userService;
-    private UserCredentials validUserCredentials;
+
+    private UserCredentials userCredentials;
 
     private HttpStatus responseEntityStatus;
 
-    private final static String MOCK_USERNAME = "keyboardcat-fnfwe3984bqd333";
-    private final static String MOCK_PASSWORD = "keyboardcat-82742HFWEKJeknl";
-
     @After
     public void cleanUpMockData() {
-        userService.deleteUser(MOCK_USERNAME);
+        userService.deleteUser(userCredentials.username());
     }
 
-    @Given("a user provides valid registration details")
-    public void aUserProvidesValidRegistrationDetails() {
-        validUserCredentials =
+    @Given("a user provides valid registration details with username {string} and password {string}")
+    public void aUserProvidesValidRegistrationDetails(String username, String password) {
+        userCredentials =
                 new UserCredentials(
-                        MOCK_USERNAME, MOCK_PASSWORD);
+                        username, password);
 
-        Assertions.assertNotNull(validUserCredentials);
-        Assertions.assertNotNull(validUserCredentials.username());
-        Assertions.assertNotNull(validUserCredentials.password());
+        Assertions.assertNotNull(userCredentials);
+        Assertions.assertFalse(userService.hasFormattingErrors(userCredentials.username(), userCredentials.password()));
     }
 
     @When("the user submits the registration form")
     public void theUserSubmitsTheRegistrationForm() {
-        ResponseEntity<Success> responseEntity = userService.signUp(validUserCredentials.username(), validUserCredentials.password());
+        ResponseEntity<Success> responseEntity = userService.signUp(userCredentials.username(), userCredentials.password());
         responseEntityStatus = (HttpStatus) responseEntity.getStatusCode();
 
         Assertions.assertNotNull(responseEntityStatus);
@@ -52,5 +51,19 @@ public class UserSignUpFeature {
     @Then("the user should be registered successfully")
     public void theUserShouldBeRegisteredSuccessfully() {
         assertEquals(HttpStatus.OK, responseEntityStatus);
+    }
+
+    @Given("a user provides invalid registration details with username {string} and password {string}")
+    public void aUserProvidesInvalidRegistrationDetailsWithUsernameAndPassword(String username, String password) {
+        userCredentials =
+                new UserCredentials(
+                        username, password);
+        Assertions.assertNotNull(userCredentials);
+        Assertions.assertTrue(userService.hasFormattingErrors(userCredentials.username(), userCredentials.password()));
+    }
+
+    @Then("the registration should fail")
+    public void theRegistrationShouldFail() {
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntityStatus);
     }
 }

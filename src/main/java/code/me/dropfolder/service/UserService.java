@@ -32,6 +32,33 @@ public class UserService {
         return null;
     }
 
+    public boolean hasFormattingErrors(String username, String password) {
+        return username.isBlank() ||
+                hasNonAlphanumericCharacters(username) ||
+                !hasMinLength(username, 3)
+                ||
+                password.isBlank() ||
+                        !containsUpperCase(password) ||
+                        !hasMinLength(password, 6);
+    }
+
+    public boolean hasNonAlphanumericCharacters(String string) {
+        // Regular expression to match non-alphanumeric characters
+        String nonAlphanumericRegex = ".*[^a-zA-Z0-9].*";
+        return string.matches(nonAlphanumericRegex);
+    }
+
+    private boolean hasMinLength(String string, int minLength) {
+        return string.length() >= minLength;
+    }
+
+    private boolean containsUpperCase(String string) {
+        // Regex to match at least one uppercase letter
+        String uppercaseRegex = ".*[A-Z].*";
+        return string.matches(uppercaseRegex);
+    }
+
+
     private boolean isExistingUser(long id) {
         Optional<User> user = userRepository.findById(id);
         return user.isPresent();
