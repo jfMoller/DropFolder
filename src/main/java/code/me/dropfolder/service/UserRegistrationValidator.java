@@ -28,13 +28,13 @@ public class UserRegistrationValidator {
         }
     }
 
-    private boolean hasUsernameFormattingError(String username) {
+    public boolean hasUsernameFormattingError(String username) {
         return username.isBlank() ||
                 hasNonAlphanumericCharacters(username) ||
                 isBelowMinLength(username, 3);
     }
 
-    private boolean hasPasswordFormattingError(String password) {
+    public boolean hasPasswordFormattingError(String password) {
         return password.isBlank() ||
                 !containsUpperCase(password) ||
                 isBelowMinLength(password, 6);

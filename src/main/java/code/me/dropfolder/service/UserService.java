@@ -1,13 +1,14 @@
 package code.me.dropfolder.service;
 
 import code.me.dropfolder.dto.Success;
-import code.me.dropfolder.exception.type.*;
+import code.me.dropfolder.exception.type.AccountRegistrationException;
 import code.me.dropfolder.model.User;
 import code.me.dropfolder.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -23,6 +24,7 @@ public class UserService {
         this.userRegistrationValidator = userRegistrationValidator;
     }
 
+    @Transactional
     public ResponseEntity<Success> signUp(String username, String password) {
 
         // Throws exceptions if there are formatting errors
@@ -39,7 +41,8 @@ public class UserService {
             boolean isUserRegistered = isExistingUser(newUser.getId());
             if (isUserRegistered) {
                 return new Success(
-                        HttpStatus.CREATED, "Successfully registered a new account with username: " + newUser.getUsername())
+                        HttpStatus.CREATED,
+                        "Successfully registered a new account with username: " + newUser.getUsername())
                         .toResponseEntity();
             } else {
                 throw new AccountRegistrationException(

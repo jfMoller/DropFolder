@@ -4,6 +4,9 @@ import code.me.dropfolder.dto.Success;
 import code.me.dropfolder.dto.UserCredentials;
 import code.me.dropfolder.exception.ExceptionHandler;
 import code.me.dropfolder.exception.dto.Error;
+import code.me.dropfolder.exception.type.PasswordFormattingException;
+import code.me.dropfolder.exception.type.UsernameFormattingException;
+import code.me.dropfolder.service.UserRegistrationValidator;
 import code.me.dropfolder.service.UserService;
 import io.cucumber.java.After;
 import io.cucumber.java.en.Given;
@@ -27,6 +30,10 @@ public class UserSignUpFeature {
     @Autowired
     private UserService userService;
 
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
+    @Autowired
+    private UserRegistrationValidator userRegistrationValidator;
+
     private UserCredentials userCredentials;
 
     private HttpStatus responseEntityStatus;
@@ -43,7 +50,8 @@ public class UserSignUpFeature {
                         username, password);
 
         Assertions.assertNotNull(userCredentials);
-        Assertions.assertFalse(userService.hasFormattingErrors(userCredentials.username(), userCredentials.password()));
+        Assertions.assertFalse(userRegistrationValidator.hasUsernameFormattingError(userCredentials.username()));
+        Assertions.assertFalse(userRegistrationValidator.hasPasswordFormattingError(userCredentials.password()));
     }
 
     @When("the user submits the registration form")
@@ -53,8 +61,12 @@ public class UserSignUpFeature {
             responseEntityStatus = (HttpStatus) responseEntity.getStatusCode();
 
             Assertions.assertNotNull(responseEntityStatus);
-        } catch (RegistrationFormattingException exception) {
-            ResponseEntity<Error> responseEntity = exceptionHandler.handleRegistrationFormattingException(exception);
+        } catch (UsernameFormattingException exception) {
+            ResponseEntity<Error> responseEntity = exceptionHandler.handleUsernameFormattingException(exception);
+            responseEntityStatus = (HttpStatus) responseEntity.getStatusCode();
+
+        } catch (PasswordFormattingException exception) {
+            ResponseEntity<Error> responseEntity = exceptionHandler.handlePasswordFormattingException(exception);
             responseEntityStatus = (HttpStatus) responseEntity.getStatusCode();
         }
     }
@@ -70,7 +82,10 @@ public class UserSignUpFeature {
                 new UserCredentials(
                         username, password);
         Assertions.assertNotNull(userCredentials);
-        Assertions.assertTrue(userService.hasFormattingErrors(userCredentials.username(), userCredentials.password()));
+
+        Assertions.assertTrue(
+                userRegistrationValidator.hasUsernameFormattingError(userCredentials.username()) ||
+                        userRegistrationValidator.hasPasswordFormattingError(userCredentials.password()));
     }
 
     @Then("the registration should fail")
