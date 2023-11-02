@@ -12,6 +12,9 @@ public class Error {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
     private LocalDateTime timestamp;
 
+    @JsonProperty("error")
+    private Boolean error;
+
     @JsonProperty("status")
     private HttpStatus status;
     @JsonProperty("message")
@@ -19,6 +22,7 @@ public class Error {
 
     public Error(HttpStatus status, Throwable ex) {
         this.timestamp = LocalDateTime.now();
+        this.error = true;
         this.status = status;
         this.message = ex.getMessage();
     }

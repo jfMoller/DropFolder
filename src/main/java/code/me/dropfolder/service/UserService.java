@@ -6,6 +6,7 @@ import code.me.dropfolder.exception.type.RegistrationFormattingException;
 import code.me.dropfolder.model.User;
 import code.me.dropfolder.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -27,11 +28,16 @@ public class UserService {
         try {
             User newUser = new User(username, password);
             userRepository.save(newUser);
-            return ResponseEntity.ok(
-                    new Success("Account created successfully with username: " + newUser.getUsername()));
-        } catch (Exception ex) {
-            throw new AccountRegistrationException("Failed to register a new account");
+            boolean hasBeenRegistered = isExistingUser(newUser.getId());
+            if (hasBeenRegistered) {
+                return new Success(
+                        HttpStatus.CREATED, "Account registration was successful for username: " + newUser.getUsername())
+                        .toResponseEntity();
+            }
+        } catch (Exception exception) {
+            throw new AccountRegistrationException("Failed to register a new account: " + exception.getMessage());
         }
+        throw new AccountRegistrationException("Unable to register a new account");
     }
 
     public ResponseEntity<Success> login(String username, String password) {

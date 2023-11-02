@@ -2,6 +2,8 @@ package code.me.dropfolder.cucumberglue;
 
 import code.me.dropfolder.dto.Success;
 import code.me.dropfolder.dto.UserCredentials;
+import code.me.dropfolder.exception.ExceptionHandler;
+import code.me.dropfolder.exception.dto.Error;
 import code.me.dropfolder.exception.type.RegistrationFormattingException;
 import code.me.dropfolder.service.UserService;
 import io.cucumber.java.After;
@@ -17,6 +19,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 public class UserSignUpFeature {
+
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
+    @Autowired
+    private ExceptionHandler exceptionHandler;
 
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
@@ -48,14 +54,15 @@ public class UserSignUpFeature {
             responseEntityStatus = (HttpStatus) responseEntity.getStatusCode();
 
             Assertions.assertNotNull(responseEntityStatus);
-        } catch (RegistrationFormattingException ex) {
-            responseEntityStatus = HttpStatus.BAD_REQUEST;
+        } catch (RegistrationFormattingException exception) {
+            ResponseEntity<Error> responseEntity = exceptionHandler.handleRegistrationFormattingException(exception);
+            responseEntityStatus = (HttpStatus) responseEntity.getStatusCode();
         }
     }
 
     @Then("the user should be registered successfully")
     public void theUserShouldBeRegisteredSuccessfully() {
-        assertEquals(HttpStatus.OK, responseEntityStatus);
+        assertEquals(HttpStatus.CREATED, responseEntityStatus);
     }
 
     @Given("a user provides invalid registration details with username {string} and password {string}")
