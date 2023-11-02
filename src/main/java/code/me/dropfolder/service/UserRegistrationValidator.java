@@ -10,6 +10,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserRegistrationValidator {
 
+    private final static int USERNAME_MIN_LENGTH = 3;
+    private final static int USERNAME_MAX_LENGTH = 14;
+    private final static int PASSWORD_MIN_LENGTH = 6;
+    private final static int PASSWORD_MAX_LENGTH = 17;
+
     private final UserRepository userRepository;
 
     @Autowired
@@ -20,24 +25,26 @@ public class UserRegistrationValidator {
     public void findFormattingErrors(String username, String password) {
         if (hasUsernameFormattingError(username)) {
             throw new UsernameFormattingException(
-                    "A username needs to be at least 3 characters long, and must not include non-alphanumeric characters");
+                    String.format("The username must be between %s-%s characters long, and must not include non-alphanumeric characters",
+                            USERNAME_MIN_LENGTH, USERNAME_MAX_LENGTH));
         }
         if (hasPasswordFormattingError(password)) {
             throw new PasswordFormattingException(
-                    "A password needs to be at least 6 characters long, and must include at least one uppercase letter");
+                    String.format("The password must be at between %s-%s characters long, and must include at least one uppercase letter",
+                            PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH));
         }
     }
 
     public boolean hasUsernameFormattingError(String username) {
         return username.isBlank() ||
                 hasNonAlphanumericCharacters(username) ||
-                isBelowMinLength(username, 3);
+                isInvalidLength(username, USERNAME_MIN_LENGTH, USERNAME_MAX_LENGTH);
     }
 
     public boolean hasPasswordFormattingError(String password) {
         return password.isBlank() ||
                 !containsUpperCase(password) ||
-                isBelowMinLength(password, 6);
+                isInvalidLength(password, PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH);
     }
 
     public boolean hasNonAlphanumericCharacters(String string) {
@@ -46,8 +53,9 @@ public class UserRegistrationValidator {
         return string.matches(nonAlphanumericRegex);
     }
 
-    private boolean isBelowMinLength(String string, int minLength) {
-        return string.length() < minLength;
+    private boolean isInvalidLength(String string, int minLength, int maxLength) {
+        int length = string.length();
+        return length < minLength || length > maxLength;
     }
 
     private boolean containsUpperCase(String string) {

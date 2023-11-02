@@ -43,7 +43,7 @@ public class UserSignUpFeature {
         userService.deleteUser(userCredentials.username());
     }
 
-    @Given("a user provides valid registration details with username {string} and password {string}")
+    @Given("a user provides valid registration credentials with username {string} and password {string}")
     public void aUserProvidesValidRegistrationDetails(String username, String password) {
         userCredentials =
                 new UserCredentials(
@@ -76,7 +76,7 @@ public class UserSignUpFeature {
         assertEquals(HttpStatus.CREATED, responseEntityStatus);
     }
 
-    @Given("a user provides invalid registration details with username {string} and password {string}")
+    @Given("a user provides invalid registration credentials with username {string} and password {string}")
     public void aUserProvidesInvalidRegistrationDetailsWithUsernameAndPassword(String username, String password) {
         userCredentials =
                 new UserCredentials(
