@@ -4,7 +4,6 @@ import code.me.dropfolder.dto.Success;
 import code.me.dropfolder.dto.UserCredentials;
 import code.me.dropfolder.exception.ExceptionHandler;
 import code.me.dropfolder.exception.dto.Error;
-import code.me.dropfolder.exception.type.RegistrationFormattingException;
 import code.me.dropfolder.service.UserService;
 import io.cucumber.java.After;
 import io.cucumber.java.en.Given;
