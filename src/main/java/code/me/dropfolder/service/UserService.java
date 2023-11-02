@@ -1,6 +1,8 @@
 package code.me.dropfolder.service;
 
 import code.me.dropfolder.dto.Success;
+import code.me.dropfolder.exception.type.AccountRegistrationException;
+import code.me.dropfolder.exception.type.RegistrationFormattingException;
 import code.me.dropfolder.model.User;
 import code.me.dropfolder.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +21,17 @@ public class UserService {
     }
 
     public ResponseEntity<Success> signUp(String username, String password) {
-        User newUser = new User(username, password);
-        userRepository.save(newUser);
-        if (isExistingUser(newUser.getId())) {
+        if (hasFormattingErrors(username, password)) {
+            throw new RegistrationFormattingException("Invalid formatting detected");
+        }
+        try {
+            User newUser = new User(username, password);
+            userRepository.save(newUser);
             return ResponseEntity.ok(
                     new Success("Account created successfully with username: " + newUser.getUsername()));
+        } catch (Exception ex) {
+            throw new AccountRegistrationException("Failed to register a new account");
         }
-        return null;
     }
 
     public ResponseEntity<Success> login(String username, String password) {
@@ -38,8 +44,8 @@ public class UserService {
                 !hasMinLength(username, 3)
                 ||
                 password.isBlank() ||
-                        !containsUpperCase(password) ||
-                        !hasMinLength(password, 6);
+                !containsUpperCase(password) ||
+                !hasMinLength(password, 6);
     }
 
     public boolean hasNonAlphanumericCharacters(String string) {

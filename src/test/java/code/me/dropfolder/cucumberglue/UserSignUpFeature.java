@@ -2,6 +2,7 @@ package code.me.dropfolder.cucumberglue;
 
 import code.me.dropfolder.dto.Success;
 import code.me.dropfolder.dto.UserCredentials;
+import code.me.dropfolder.exception.type.RegistrationFormattingException;
 import code.me.dropfolder.service.UserService;
 import io.cucumber.java.After;
 import io.cucumber.java.en.Given;
@@ -42,10 +43,14 @@ public class UserSignUpFeature {
 
     @When("the user submits the registration form")
     public void theUserSubmitsTheRegistrationForm() {
-        ResponseEntity<Success> responseEntity = userService.signUp(userCredentials.username(), userCredentials.password());
-        responseEntityStatus = (HttpStatus) responseEntity.getStatusCode();
+        try {
+            ResponseEntity<Success> responseEntity = userService.signUp(userCredentials.username(), userCredentials.password());
+            responseEntityStatus = (HttpStatus) responseEntity.getStatusCode();
 
-        Assertions.assertNotNull(responseEntityStatus);
+            Assertions.assertNotNull(responseEntityStatus);
+        } catch (RegistrationFormattingException ex) {
+            responseEntityStatus = HttpStatus.BAD_REQUEST;
+        }
     }
 
     @Then("the user should be registered successfully")
