@@ -25,29 +25,20 @@ public class UserService {
     }
 
     @Transactional
-    public ResponseEntity<Success> signUp(String username, String password) {
-
+    public ResponseEntity<Success> registerUser(String username, String password) {
         // Throws exceptions if there are formatting errors
         userRegistrationValidator.findFormattingErrors(username, password);
 
         // Throws an exception if the chosen username already exists
         userRegistrationValidator.findNonUniqueUsername(username);
 
-        // Tries to create a and save a new user
         try {
-            User newUser = new User(username, password);
-            userRepository.save(newUser);
+            userRepository.save(new User(username, password));
+            return new Success(
+                    HttpStatus.CREATED,
+                    "Successfully registered a new account with username: " + username)
+                    .toResponseEntity();
 
-            boolean isUserRegistered = isExistingUser(newUser.getId());
-            if (isUserRegistered) {
-                return new Success(
-                        HttpStatus.CREATED,
-                        "Successfully registered a new account with username: " + newUser.getUsername())
-                        .toResponseEntity();
-            } else {
-                throw new AccountRegistrationException(
-                        "account with username {" + newUser.getUsername() + "} could not be saved in the user-repository");
-            }
         } catch (Exception exception) {
             throw new AccountRegistrationException("Failed to register a new account: " + exception.getMessage());
         }
@@ -55,11 +46,6 @@ public class UserService {
 
     public ResponseEntity<Success> login(String username, String password) {
         return null;
-    }
-
-    private boolean isExistingUser(long id) {
-        Optional<User> user = userRepository.findById(id);
-        return user.isPresent();
     }
 
     public long getUserId(String username) {

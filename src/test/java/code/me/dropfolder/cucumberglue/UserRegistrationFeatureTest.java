@@ -73,7 +73,7 @@ public class UserRegistrationFeatureTest {
     public void theUserSubmitsTheRegistrationForm() {
         try {
             ResponseEntity<Success> responseEntity =
-                    userService.signUp(userCredentials.username(), userCredentials.password());
+                    userService.registerUser(userCredentials.username(), userCredentials.password());
             responseEntityStatus = (HttpStatus) responseEntity.getStatusCode();
 
             Assertions.assertNotNull(responseEntityStatus);
