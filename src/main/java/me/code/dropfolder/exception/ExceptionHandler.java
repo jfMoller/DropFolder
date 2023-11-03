@@ -52,4 +52,10 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Error> handleInvalidTokenException(RuntimeException exception) {
         return buildResponseEntity(HttpStatus.UNAUTHORIZED, exception);
     }
+
+    // Handles exceptions related to failed user login
+    @org.springframework.web.bind.annotation.ExceptionHandler(LoginFailureException.class)
+    public ResponseEntity<Error> handleLoginFailureException(RuntimeException exception) {
+        return buildResponseEntity(HttpStatus.UNAUTHORIZED, exception);
+    }
 }

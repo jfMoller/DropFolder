@@ -9,9 +9,13 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
+    @Query("SELECT u FROM User u WHERE u.username = :username AND u.password = :password")
+    User findUser(@Param("username") String username, @Param("password") String password);
+
     @Query("SELECT u.id FROM User u WHERE u.username = :username")
     Optional<Long> findUserId(@Param("username") String username);
 
     @Query("SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END FROM User u WHERE u.username = :username")
     boolean isPreexistingUsername(@Param("username") String username);
+
 }

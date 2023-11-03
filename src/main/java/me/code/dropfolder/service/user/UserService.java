@@ -1,7 +1,10 @@
 package me.code.dropfolder.service.user;
 
+import me.code.dropfolder.auth.JwtTokenProvider;
+import me.code.dropfolder.dto.Auth;
 import me.code.dropfolder.dto.Success;
 import me.code.dropfolder.exception.type.AccountRegistrationException;
+import me.code.dropfolder.exception.type.LoginFailureException;
 import me.code.dropfolder.model.User;
 import me.code.dropfolder.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +21,15 @@ public class UserService {
 
     private final UserRegistrationValidator userRegistrationValidator;
 
+    private final JwtTokenProvider jwtTokenProvider;
+
     @Autowired
-    public UserService(UserRepository userRepository, UserRegistrationValidator userRegistrationValidator) {
+    public UserService(UserRepository userRepository,
+                       UserRegistrationValidator userRegistrationValidator,
+                       JwtTokenProvider jwtTokenProvider) {
         this.userRepository = userRepository;
         this.userRegistrationValidator = userRegistrationValidator;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @Transactional
@@ -45,15 +53,21 @@ public class UserService {
     }
 
     public ResponseEntity<Success> login(String username, String password) {
-        return null;
+        try {
+            User user = userRepository.findUser(username, password);
+            String token = jwtTokenProvider.generateToken(user);
+            return new Auth(HttpStatus.OK, "Login successful", token).toResponseEntity();
+
+        } catch (Exception exception) {
+            throw new LoginFailureException("Login failed: " + exception.getMessage());
+        }
     }
 
     public long getUserId(String username) {
         Optional<Long> id = userRepository.findUserId(username);
         if (id.isPresent()) {
             return id.get();
-        }
-        else return -1;
+        } else return -1;
     }
 
     public void deleteUser(String username) {
