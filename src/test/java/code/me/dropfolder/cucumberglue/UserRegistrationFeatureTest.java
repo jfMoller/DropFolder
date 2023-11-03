@@ -13,59 +13,78 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.junit.jupiter.api.Assertions;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/**
+ * This class contains step definitions for user registration scenarios in Cucumber tests.
+ */
+public class UserRegistrationFeatureTest {
 
-public class UserSignUpFeature {
-
-    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
-    @Autowired
-    private ExceptionHandler exceptionHandler;
-
-    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
-    @Autowired
-    private UserService userService;
-
-    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
-    @Autowired
-    private UserRegistrationValidator userRegistrationValidator;
-
+    private final ExceptionHandler exceptionHandler;
+    private final UserService userService;
+    private final UserRegistrationValidator userRegistrationValidator;
     private UserCredentials userCredentials;
-
     private HttpStatus responseEntityStatus;
 
+    /**
+     * Constructor for UserRegistrationFeatureTest class.
+     *
+     * @param exceptionHandler          handles for handling generic and specific runtime exceptions.
+     * @param userService               handles user registration.
+     * @param userRegistrationValidator handles validation of user credentials.
+     */
+    public UserRegistrationFeatureTest(ExceptionHandler exceptionHandler, UserService userService, UserRegistrationValidator userRegistrationValidator) {
+        this.exceptionHandler = exceptionHandler;
+        this.userService = userService;
+        this.userRegistrationValidator = userRegistrationValidator;
+    }
+
+    /**
+     * Clean up method to delete mock user data after a scenario.
+     */
     @After
     public void cleanUpMockData() {
         userService.deleteUser(userCredentials.username());
     }
 
+    /**
+     * Step definition for providing valid registration details.
+     *
+     * @param username The username for registration.
+     * @param password The password for registration.
+     */
     @Given("a user provides valid registration credentials with username {string} and password {string}")
     public void aUserProvidesValidRegistrationDetails(String username, String password) {
-        userCredentials =
-                new UserCredentials(
-                        username, password);
+        userCredentials = new UserCredentials(username, password);
 
         Assertions.assertNotNull(userCredentials);
         Assertions.assertFalse(userRegistrationValidator.hasUsernameFormattingError(userCredentials.username()));
         Assertions.assertFalse(userRegistrationValidator.hasPasswordFormattingError(userCredentials.password()));
     }
 
-    @When("the user submits the registration form")
+    /**
+     * Step definition for submitting the registration form.
+     * It also handles exceptions related to username and password formatting.
+     */
+    @When("the user submits the registration")
     public void theUserSubmitsTheRegistrationForm() {
         try {
-            ResponseEntity<Success> responseEntity = userService.signUp(userCredentials.username(), userCredentials.password());
+            ResponseEntity<Success> responseEntity =
+                    userService.signUp(userCredentials.username(), userCredentials.password());
             responseEntityStatus = (HttpStatus) responseEntity.getStatusCode();
 
             Assertions.assertNotNull(responseEntityStatus);
+
         } catch (UsernameFormattingException exception) {
+            // Handles username formatting exception
             ResponseEntity<Error> responseEntity = exceptionHandler.handleUsernameFormattingException(exception);
             responseEntityStatus = (HttpStatus) responseEntity.getStatusCode();
 
         } catch (PasswordFormattingException exception) {
+            // Handles password formatting exception
             ResponseEntity<Error> responseEntity = exceptionHandler.handlePasswordFormattingException(exception);
             responseEntityStatus = (HttpStatus) responseEntity.getStatusCode();
         }
@@ -76,11 +95,15 @@ public class UserSignUpFeature {
         assertEquals(HttpStatus.CREATED, responseEntityStatus);
     }
 
+    /**
+     * Step definition for providing invalid registration details.
+     *
+     * @param username The invalid username for registration.
+     * @param password The invalid password for registration.
+     */
     @Given("a user provides invalid registration credentials with username {string} and password {string}")
     public void aUserProvidesInvalidRegistrationDetailsWithUsernameAndPassword(String username, String password) {
-        userCredentials =
-                new UserCredentials(
-                        username, password);
+        userCredentials = new UserCredentials(username, password);
         Assertions.assertNotNull(userCredentials);
 
         Assertions.assertTrue(

@@ -3,7 +3,7 @@ Feature: User Registration
 
   Scenario Outline: Successful user registration
     Given a user provides valid registration credentials with username "<username>" and password "<password>"
-    When the user submits the registration form
+    When the user submits the registration
     Then the user should be registered successfully
 
     Examples:
@@ -12,7 +12,7 @@ Feature: User Registration
 
   Scenario Outline: Unsuccessful user registration (Invalid username)
     Given a user provides invalid registration credentials with username "<username>" and password "<password>"
-    When the user submits the registration form
+    When the user submits the registration
     Then the registration should fail
 
     Examples:
@@ -24,7 +24,7 @@ Feature: User Registration
 
   Scenario Outline: Unsuccessful user registration (Invalid password)
     Given a user provides invalid registration credentials with username "<username>" and password "<password>"
-    When the user submits the registration form
+    When the user submits the registration
     Then the registration should fail
 
     Examples:
