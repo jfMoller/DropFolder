@@ -6,6 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Error {
 
@@ -20,11 +22,20 @@ public class Error {
     @JsonProperty("message")
     private String message;
 
+    @JsonProperty("subErrors")
+    private List<SubError> subErrors;
+
+
     public Error(HttpStatus status, Throwable ex) {
         this.timestamp = LocalDateTime.now();
         this.error = true;
         this.status = status;
         this.message = ex.getMessage();
+        this.subErrors = new ArrayList<>();
+    }
+
+    public <T extends SubError> void addSubError(T error) {
+        subErrors.add(error);
     }
 
     public ResponseEntity<Error> toResponseEntity() {

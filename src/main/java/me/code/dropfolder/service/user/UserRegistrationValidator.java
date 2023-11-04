@@ -1,5 +1,6 @@
 package me.code.dropfolder.service.user;
 
+import me.code.dropfolder.exception.dto.ValidationError;
 import me.code.dropfolder.exception.type.NonUniqueUsernameException;
 import me.code.dropfolder.exception.type.PasswordFormattingException;
 import me.code.dropfolder.exception.type.UsernameFormattingException;
@@ -66,7 +67,13 @@ public class UserRegistrationValidator {
 
     public void findNonUniqueUsername(String username) {
         if (isUsernameTaken(username)) {
-            throw new NonUniqueUsernameException("An account with the chosen username already exists");
+            throw new NonUniqueUsernameException(
+                    "An account with the chosen username already exists",
+                    new ValidationError(
+                            "user",
+                            "username",
+                            username,
+                            "'" + username + "'" + " is not a unique username."));
         }
     }
 

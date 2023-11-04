@@ -1,6 +1,8 @@
 package me.code.dropfolder.exception;
 
 import me.code.dropfolder.exception.dto.Error;
+import me.code.dropfolder.exception.dto.SubError;
+import me.code.dropfolder.exception.dto.ValidationError;
 import me.code.dropfolder.exception.type.*;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -15,6 +17,12 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
 
     private ResponseEntity<Error> buildResponseEntity(HttpStatus status, Throwable exception) {
         return new Error(status, exception).toResponseEntity();
+    }
+
+    private <T extends SubError> ResponseEntity<Error> buildResponseEntity(HttpStatus status, Throwable exception, T subError) {
+        Error error = new Error(status, exception);
+        error.addSubError(subError);
+        return error.toResponseEntity();
     }
 
     // Handles generic exceptions
@@ -43,8 +51,9 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
 
     // Handles exceptions related to non-unique usernames
     @org.springframework.web.bind.annotation.ExceptionHandler(NonUniqueUsernameException.class)
-    public ResponseEntity<Error> handleNonUniqueUsernameException(RuntimeException exception) {
-        return buildResponseEntity(HttpStatus.CONFLICT, exception);
+    public ResponseEntity<Error> handleNonUniqueUsernameException(NonUniqueUsernameException exception) {
+        ValidationError validationError = exception.getValidationError();
+        return buildResponseEntity(HttpStatus.CONFLICT, exception, validationError);
     }
 
     // Handles exceptions related to invalid tokens
