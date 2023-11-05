@@ -1,8 +1,8 @@
 package me.code.dropfolder.exception;
 
 import me.code.dropfolder.exception.dto.Error;
-import me.code.dropfolder.exception.dto.SubError;
-import me.code.dropfolder.exception.dto.ValidationError;
+import me.code.dropfolder.exception.dto.ErrorDetail;
+import me.code.dropfolder.exception.dto.ValidationErrorDetail;
 import me.code.dropfolder.exception.type.*;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -19,9 +19,9 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
         return new Error(status, exception).toResponseEntity();
     }
 
-    private <T extends SubError> ResponseEntity<Error> buildResponseEntity(HttpStatus status, Throwable exception, T subError) {
+    private <T extends ErrorDetail> ResponseEntity<Error> buildResponseEntity(HttpStatus status, Throwable exception, T errorDetail) {
         Error error = new Error(status, exception);
-        error.addSubError(subError);
+        error.addErrorDetail(errorDetail);
         return error.toResponseEntity();
     }
 
@@ -40,21 +40,21 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
     // Handles exceptions related to username formatting errors
     @org.springframework.web.bind.annotation.ExceptionHandler(UsernameFormattingException.class)
     public ResponseEntity<Error> handleUsernameFormattingException(UsernameFormattingException exception) {
-        ValidationError validationError = exception.getValidationError();
+        ValidationErrorDetail validationError = exception.getValidationError();
         return buildResponseEntity(HttpStatus.CONFLICT, exception, validationError);
     }
 
     // Handles exceptions related to password formatting errors
     @org.springframework.web.bind.annotation.ExceptionHandler(PasswordFormattingException.class)
     public ResponseEntity<Error> handlePasswordFormattingException(PasswordFormattingException exception) {
-        ValidationError validationError = exception.getValidationError();
+        ValidationErrorDetail validationError = exception.getValidationError();
         return buildResponseEntity(HttpStatus.CONFLICT, exception, validationError);
     }
 
     // Handles exceptions related to non-unique values in the context of user registration
     @org.springframework.web.bind.annotation.ExceptionHandler(NonUniqueValueException.class)
     public ResponseEntity<Error> handleNonUniqueValueException(NonUniqueValueException exception) {
-        ValidationError validationError = exception.getValidationError();
+        ValidationErrorDetail validationError = exception.getValidationError();
         return buildResponseEntity(HttpStatus.CONFLICT, exception, validationError);
     }
 

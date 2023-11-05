@@ -6,12 +6,12 @@ import lombok.EqualsAndHashCode;
 
 /**
  * A data class representing a validation error.
- * It extends the SubError class and provides additional information specific to validation errors.
+ * It extends the ErrorDetail class and provides additional information specific to validation errors.
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
-public class ValidationError extends SubError {
+public class ValidationErrorDetail extends ErrorDetail {
 
     // The object associated with the validation error.
     private String targetObject;

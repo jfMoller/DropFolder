@@ -22,8 +22,8 @@ public class Error {
     @JsonProperty("message")
     private String message;
 
-    @JsonProperty("subErrors")
-    private List<SubError> subErrors;
+    @JsonProperty("errorDetails")
+    private List<ErrorDetail> errorDetails;
 
 
     public Error(HttpStatus status, Throwable ex) {
@@ -31,11 +31,11 @@ public class Error {
         this.error = true;
         this.status = status;
         this.message = ex.getMessage();
-        this.subErrors = new ArrayList<>();
+        this.errorDetails = new ArrayList<>();
     }
 
-    public <T extends SubError> void addSubError(T error) {
-        subErrors.add(error);
+    public <T extends ErrorDetail> void addErrorDetail(T errorDetail) {
+        errorDetails.add(errorDetail);
     }
 
     public ResponseEntity<Error> toResponseEntity() {

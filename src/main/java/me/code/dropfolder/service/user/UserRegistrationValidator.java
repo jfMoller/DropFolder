@@ -1,6 +1,6 @@
 package me.code.dropfolder.service.user;
 
-import me.code.dropfolder.exception.dto.ValidationError;
+import me.code.dropfolder.exception.dto.ValidationErrorDetail;
 import me.code.dropfolder.exception.type.NonUniqueValueException;
 import me.code.dropfolder.exception.type.PasswordFormattingException;
 import me.code.dropfolder.exception.type.UsernameFormattingException;
@@ -78,7 +78,7 @@ public class UserRegistrationValidator {
         if (isUsernameTaken(username)) {
             throw new NonUniqueValueException(
                     "An account with the chosen username already exists",
-                    new ValidationError(
+                    new ValidationErrorDetail(
                             "user",
                             "username",
                             username,
@@ -90,7 +90,7 @@ public class UserRegistrationValidator {
         return userRepository.isPreexistingUsername(username);
     }
 
-    private ValidationError getCustomError(String type, String value) {
+    private ValidationErrorDetail getCustomError(String type, String value) {
         String field;
         String errorMessage;
 
@@ -117,7 +117,7 @@ public class UserRegistrationValidator {
             default -> throw new IllegalArgumentException("Invalid type: " + type);
         }
 
-        return new ValidationError("user", field, value, errorMessage);
+        return new ValidationErrorDetail("user", field, value, errorMessage);
     }
 
 }
