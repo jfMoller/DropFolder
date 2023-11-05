@@ -39,19 +39,21 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
 
     // Handles exceptions related to username formatting errors
     @org.springframework.web.bind.annotation.ExceptionHandler(UsernameFormattingException.class)
-    public ResponseEntity<Error> handleUsernameFormattingException(RuntimeException exception) {
-        return buildResponseEntity(HttpStatus.BAD_REQUEST, exception);
+    public ResponseEntity<Error> handleUsernameFormattingException(UsernameFormattingException exception) {
+        ValidationError validationError = exception.getValidationError();
+        return buildResponseEntity(HttpStatus.CONFLICT, exception, validationError);
     }
 
     // Handles exceptions related to password formatting errors
     @org.springframework.web.bind.annotation.ExceptionHandler(PasswordFormattingException.class)
-    public ResponseEntity<Error> handlePasswordFormattingException(RuntimeException exception) {
-        return buildResponseEntity(HttpStatus.BAD_REQUEST, exception);
+    public ResponseEntity<Error> handlePasswordFormattingException(PasswordFormattingException exception) {
+        ValidationError validationError = exception.getValidationError();
+        return buildResponseEntity(HttpStatus.CONFLICT, exception, validationError);
     }
 
-    // Handles exceptions related to non-unique usernames
-    @org.springframework.web.bind.annotation.ExceptionHandler(NonUniqueUsernameException.class)
-    public ResponseEntity<Error> handleNonUniqueUsernameException(NonUniqueUsernameException exception) {
+    // Handles exceptions related to non-unique values in the context of user registration
+    @org.springframework.web.bind.annotation.ExceptionHandler(NonUniqueValueException.class)
+    public ResponseEntity<Error> handleNonUniqueValueException(NonUniqueValueException exception) {
         ValidationError validationError = exception.getValidationError();
         return buildResponseEntity(HttpStatus.CONFLICT, exception, validationError);
     }
