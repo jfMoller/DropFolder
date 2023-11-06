@@ -7,5 +7,5 @@ Graded assignment. Building a file storage app with Java Spring & NeonDB.
 * Run Application.java.
 
 ### How to run Cucumber tests:
-cd src/test/java/me/me/dropfolder
+cd src/test/java/me/code/dropfolder
 * Run CucumberTestRunner.java.
