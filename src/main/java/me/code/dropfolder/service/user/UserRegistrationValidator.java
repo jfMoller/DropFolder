@@ -127,7 +127,8 @@ public class UserRegistrationValidator {
      * @return True if there are formatting errors, otherwise false.
      */
     public boolean hasUsernameFormattingError(String username) {
-        return username.isBlank() ||
+        if (username == null) return true;
+        else return username.isBlank() ||
                 hasNonAlphanumericCharacters(username) ||
                 isInvalidUsernameLength(username);
     }
@@ -139,7 +140,8 @@ public class UserRegistrationValidator {
      * @return True if there are formatting errors, otherwise false.
      */
     public boolean hasPasswordFormattingError(String password) {
-        return password.isBlank() ||
+        if (password == null) return true;
+        else return password.isBlank() ||
                 doesNotContainUppercase(password) ||
                 isInvalidPasswordLength(password);
     }

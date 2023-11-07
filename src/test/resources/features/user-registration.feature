@@ -21,6 +21,7 @@ Feature: User Registration
       | toolongofausername | Valid_password_2   |
       | 12                 | Valid_password_3   |
       |                    | Valid_password_3   |
+      | set_as_null        | Valid_password_3   |
 
   Scenario Outline: Unsuccessful user registration (Invalid password)
     Given a user provides invalid registration credentials with username "<username>" and password "<password>"
@@ -33,3 +34,4 @@ Feature: User Registration
       | validusername2     | short              |
       | validusername3     | no-uppercase       |
       | validusername4     | Passwordistooloong |
+      | validusername5     | set_as_null        |
