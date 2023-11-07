@@ -59,7 +59,7 @@ public class UserService {
             return new Auth(HttpStatus.OK, "Login successful", token).toResponseEntity();
 
         } catch (Exception exception) {
-            throw new LoginFailureException("Login failed: " + exception.getMessage());
+            throw new LoginFailureException("Login failed; double-check your username and password and try again");
         }
     }
 

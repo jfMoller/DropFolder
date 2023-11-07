@@ -24,8 +24,12 @@ public class Error {
     @JsonProperty("message")
     private String message;
 
-    @JsonProperty("errorDetails")
     private List<ErrorDetail> errorDetails;
+
+    @JsonProperty("errorDetails")
+    private List<ErrorDetail> errorDetails() {
+        return (errorDetails.size() > 0) ? errorDetails : null;
+    }
 
 
     public Error(HttpStatus status, Throwable ex) {
