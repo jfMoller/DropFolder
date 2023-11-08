@@ -16,7 +16,8 @@ import org.junit.jupiter.api.Assertions;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 /**
  * This class contains step definitions for user registration scenarios in Cucumber tests.
@@ -45,7 +46,7 @@ public class UserRegistrationFeatureTest {
     /**
      * Clean up method to delete mock user data after a scenario.
      */
-    @After
+    @After("@cleanupRegistrationData")
     public void cleanUpMockData() {
         userService.deleteUser(userCredentials.username());
     }
