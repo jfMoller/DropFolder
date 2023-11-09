@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Optional;
+
 @Service
 public class FileService {
     private final FileRepository fileRepository;
@@ -36,6 +38,21 @@ public class FileService {
     @Transactional
     public File getFile(String name) {
         return fileRepository.getFile(name);
+    }
+
+    public long getFileId(String name) {
+        Optional<Long> id = fileRepository.findFileId(name);
+        if (id.isPresent()) {
+            return id.get();
+        } else return -1;
+    }
+
+    @Transactional
+    public void deleteFile(String username) {
+        long id = getFileId(username);
+        if (id != -1) {
+            fileRepository.deleteById(id);
+        }
     }
 
 }

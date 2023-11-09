@@ -41,6 +41,7 @@ public class FileUploadFeatureTest {
     @After("@cleanupUploadData")
     public void cleanUpMockData() {
         userService.deleteUser(mockUsername);
+       fileService.deleteFile(attachedMockFile.getOriginalFilename());
     }
 
     @Given("the user has an account with username {string} and password {string}")
@@ -83,11 +84,10 @@ public class FileUploadFeatureTest {
         assertEquals(mockFileName, file.getName());
     }
 
-    private MultipartFile getMockFile(String fileName) {
-        Path filePath = Paths.get("src/test/resources/mockfiles/" + fileName);
-
+    private MultipartFile getMockFile(String mockFileName) {
+        Path filePath = Paths.get("src/test/resources/mockfiles/" + mockFileName);
         byte[] content;
-        String contentType = "mock_data/" + fileName;
+        String contentType = "mock_data/" + mockFileName;
 
         try {
             content = Files.readAllBytes(filePath);
@@ -95,8 +95,7 @@ public class FileUploadFeatureTest {
             throw new RuntimeException(e);
         }
 
-        return new MockMultipartFile(fileName, fileName, contentType, content);
+        return new MockMultipartFile(mockFileName, mockFileName, contentType, content);
     }
-
 
 }
