@@ -9,9 +9,9 @@ Feature: File Upload
     Then the file should be uploaded successfully
 
     Examples:
-      | username  | password   | filename |
-      | username1 | Password_1 | .txt     |
-      | username2 | Password_2 | .docx    |
-      | username3 | Password_3 | .pdf     |
-      | username4 | Password_4 | .jpg     |
-      | username5 | Password_5 | .png     |
+      | username  | password   | filename  |
+      | username1 | Password_1 | mock.txt  |
+      | username2 | Password_2 | mock.docx |
+      | username3 | Password_3 | mock.pdf  |
+      | username4 | Password_4 | mock.jpg  |
+      | username5 | Password_5 | mock.png  |

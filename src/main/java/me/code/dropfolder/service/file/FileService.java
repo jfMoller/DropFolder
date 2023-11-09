@@ -1,5 +1,6 @@
 package me.code.dropfolder.service.file;
 
+import jakarta.transaction.Transactional;
 import me.code.dropfolder.dto.Success;
 import me.code.dropfolder.model.File;
 import me.code.dropfolder.repository.FileRepository;
@@ -28,10 +29,11 @@ public class FileService {
                     .toResponseEntity();
 
         } catch (Exception exception) {
-            throw new RuntimeException("File upload failed");
+            throw new RuntimeException(exception.getMessage());
         }
     }
 
+    @Transactional
     public File getFile(String name) {
         return fileRepository.getFile(name);
     }
