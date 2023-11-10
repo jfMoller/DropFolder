@@ -41,12 +41,12 @@ public class FileUploadFeatureTest {
     @After("@cleanupUploadData")
     public void cleanUpMockData() {
         userService.deleteUser(mockUsername);
-       fileService.deleteFile(attachedMockFile.getOriginalFilename());
+        fileService.deleteFile(attachedMockFile.getOriginalFilename());
     }
 
     @Given("the user has an account with username {string} and password {string}")
     public void theUserHasAnAccountWithUsernameAndPassword(String username, String password) {
-        ResponseEntity<Success> responseEntity = userService.registerUser(username, password);
+        ResponseEntity<Success> responseEntity = userService.registerUser(username, password).toResponseEntity();
         responseEntityStatus = (HttpStatus) responseEntity.getStatusCode();
 
         assertEquals(HttpStatus.CREATED, responseEntityStatus);
@@ -57,7 +57,7 @@ public class FileUploadFeatureTest {
 
     @Given("the user is logged in with username {string} and password {string}")
     public void theUserIsLoggedInWithUsernameAndPassword(String username, String password) {
-        ResponseEntity<Success> responseEntity = userService.login(username, password);
+        ResponseEntity<Success> responseEntity = userService.login(username, password).toResponseEntity();
         responseEntityStatus = (HttpStatus) responseEntity.getStatusCode();
 
         assertEquals(HttpStatus.OK, responseEntityStatus);

@@ -3,13 +3,11 @@ package me.code.dropfolder.service.user;
 import me.code.dropfolder.auth.JwtTokenProvider;
 import me.code.dropfolder.dto.Auth;
 import me.code.dropfolder.dto.Success;
-import me.code.dropfolder.exception.type.AccountRegistrationException;
-import me.code.dropfolder.exception.type.LoginFailureException;
+import me.code.dropfolder.exception.type.*;
 import me.code.dropfolder.model.User;
 import me.code.dropfolder.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,7 +31,10 @@ public class UserService {
     }
 
     @Transactional
-    public ResponseEntity<Success> registerUser(String username, String password) {
+    public Success registerUser(String username, String password)
+            throws UsernameFormattingException, PasswordFormattingException,
+            NonUniqueValueException, AccountRegistrationException {
+
         // Throws exceptions if there are formatting errors
         userRegistrationValidator.findFormattingErrors(username, password);
 
@@ -44,19 +45,18 @@ public class UserService {
             userRepository.save(new User(username, password));
             return new Success(
                     HttpStatus.CREATED,
-                    "Successfully registered a new account with username: " + username)
-                    .toResponseEntity();
+                    "Successfully registered a new account with username: " + username);
 
         } catch (Exception exception) {
             throw new AccountRegistrationException("Failed to register a new account: " + exception.getMessage());
         }
     }
 
-    public ResponseEntity<Success> login(String username, String password) {
+    public Auth login(String username, String password) throws LoginFailureException {
         try {
             User user = userRepository.findUser(username, password);
             String token = jwtTokenProvider.generateToken(user);
-            return new Auth(HttpStatus.OK, "Login successful", token).toResponseEntity();
+            return new Auth(HttpStatus.OK, "Login successful", token);
 
         } catch (Exception exception) {
             throw new LoginFailureException("Login failed; double-check your username and password and try again");

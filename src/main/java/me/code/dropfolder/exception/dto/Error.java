@@ -31,7 +31,6 @@ public class Error {
         return (errorDetails.size() > 0) ? errorDetails : null;
     }
 
-
     public Error(HttpStatus status, Throwable ex) {
         this.timestamp = LocalDateTime.now();
         this.error = true;

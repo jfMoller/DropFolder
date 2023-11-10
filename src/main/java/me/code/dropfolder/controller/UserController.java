@@ -20,13 +20,15 @@ public class UserController {
     }
 
     @PostMapping("/sign-up")
-    public ResponseEntity<Success> signUp(@RequestBody UserCredentials newUser) {
-        return userService.registerUser(newUser.username(), newUser.password());
+    public ResponseEntity<Success> signUp(@RequestBody UserCredentials dto) {
+        Success result = userService.registerUser(dto.username(), dto.password());
+        return result.toResponseEntity();
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Success> login(@RequestBody UserCredentials user) {
-        return userService.login(user.username(), user.password());
+    public ResponseEntity<Success> login(@RequestBody UserCredentials dto) {
+        Success result = userService.login(dto.username(), dto.password());
+        return result.toResponseEntity();
     }
 
 }
