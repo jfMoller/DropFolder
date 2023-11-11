@@ -2,11 +2,12 @@ package me.code.dropfolder.service.file;
 
 import jakarta.transaction.Transactional;
 import me.code.dropfolder.dto.Success;
+import me.code.dropfolder.exception.dto.UploadErrorDetail;
+import me.code.dropfolder.exception.type.FileUploadFailureException;
 import me.code.dropfolder.model.File;
 import me.code.dropfolder.repository.FileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,17 +22,17 @@ public class FileService {
         this.fileRepository = fileRepository;
     }
 
-    public ResponseEntity<Success> upload(MultipartFile attachedFile) {
+    public Success upload(MultipartFile attachedFile) throws FileUploadFailureException {
         // Throws exceptions if there are formatting errors
         try {
             fileRepository.save(new File(attachedFile));
             return new Success(
                     HttpStatus.CREATED,
-                    "Successfully uploaded a new file with name: " + attachedFile.getOriginalFilename())
-                    .toResponseEntity();
+                    "Successfully uploaded a new file with name: " + attachedFile.getOriginalFilename());
 
         } catch (Exception exception) {
-            throw new RuntimeException(exception.getMessage());
+            throw new FileUploadFailureException("File upload failed",
+                    new UploadErrorDetail(attachedFile, exception));
         }
     }
 

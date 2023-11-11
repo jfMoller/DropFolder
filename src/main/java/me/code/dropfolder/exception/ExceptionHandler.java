@@ -2,6 +2,7 @@ package me.code.dropfolder.exception;
 
 import me.code.dropfolder.exception.dto.Error;
 import me.code.dropfolder.exception.dto.ErrorDetail;
+import me.code.dropfolder.exception.dto.UploadErrorDetail;
 import me.code.dropfolder.exception.dto.ValidationErrorDetail;
 import me.code.dropfolder.exception.type.*;
 import org.springframework.core.Ordered;
@@ -19,7 +20,8 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
         return new Error(status, exception).toResponseEntity();
     }
 
-    private <T extends ErrorDetail> ResponseEntity<Error> buildResponseEntity(HttpStatus status, Throwable exception, T errorDetail) {
+    private <T extends ErrorDetail> ResponseEntity<Error> buildResponseEntity(
+            HttpStatus status, Throwable exception, T errorDetail) {
         Error error = new Error(status, exception);
         error.addErrorDetail(errorDetail);
         return error.toResponseEntity();
@@ -56,6 +58,13 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Error> handleNonUniqueValueException(NonUniqueValueException exception) {
         ValidationErrorDetail validationError = exception.getValidationError();
         return buildResponseEntity(HttpStatus.CONFLICT, exception, validationError);
+    }
+
+    // Handles exceptions related to file uploads
+    @org.springframework.web.bind.annotation.ExceptionHandler(FileUploadFailureException.class)
+    public ResponseEntity<Error> handleFileUploadFailureException(FileUploadFailureException exception) {
+        UploadErrorDetail uploadError = exception.getUploadError();
+        return buildResponseEntity(HttpStatus.BAD_REQUEST, exception, uploadError);
     }
 
     // Handles exceptions related to invalid tokens

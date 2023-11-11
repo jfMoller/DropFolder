@@ -67,7 +67,7 @@ public class FileUploadFeatureTest {
     public void theUserUploadsAFileWithName(String name) {
         attachedMockFile = getMockFile(name);
 
-        ResponseEntity<Success> responseEntity = fileService.upload(attachedMockFile);
+        ResponseEntity<Success> responseEntity = fileService.upload(attachedMockFile).toResponseEntity();
         ;
         responseEntityStatus = (HttpStatus) responseEntity.getStatusCode();
 
