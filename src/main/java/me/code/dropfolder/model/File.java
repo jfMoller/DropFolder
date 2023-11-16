@@ -17,7 +17,7 @@ import java.io.IOException;
 public class File {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private long file_id;
 
     @Column(name = "name", unique = true, nullable = false)
     private String name;
@@ -31,6 +31,10 @@ public class File {
     @Lob
     @Column(name = "data", nullable = false)
     private byte[] data;
+
+    @ManyToOne
+    @JoinColumn(name = "folder_id")
+    private Folder folder;
 
     public File(MultipartFile file) throws IOException {
         this.name = StringUtils.cleanPath(file.getOriginalFilename());
