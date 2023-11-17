@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -16,7 +17,7 @@ public class Folder {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long folder_id;
+    private long id;
 
     @Column(name = "name", unique = true, nullable = false)
     private String name;
@@ -25,7 +26,12 @@ public class Folder {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "folder")
+    @OneToMany(mappedBy = "folder", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<File> files;
+
+    public Folder(String name) {
+        this.name = name;
+        this.files = new ArrayList<>();
+    }
 
 }

@@ -15,9 +15,10 @@ import java.io.IOException;
 @Setter
 @NoArgsConstructor
 public class File {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long file_id;
+    private long id;
 
     @Column(name = "name", unique = true, nullable = false)
     private String name;
@@ -41,6 +42,6 @@ public class File {
         this.contentType = file.getContentType();
         this.size = file.getSize();
         this.data = file.getBytes();
-
     }
+
 }
