@@ -1,6 +1,6 @@
 package me.code.dropfolder.service.user;
 
-import me.code.dropfolder.auth.JwtTokenProvider;
+import me.code.dropfolder.security.JwtTokenProvider;
 import me.code.dropfolder.dto.Auth;
 import me.code.dropfolder.dto.Success;
 import me.code.dropfolder.exception.type.*;
@@ -8,14 +8,20 @@ import me.code.dropfolder.model.User;
 import me.code.dropfolder.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
+
+    private final PasswordEncoder passwordEncoder;
 
     private final UserRegistrationValidator userRegistrationValidator;
 
@@ -23,11 +29,20 @@ public class UserService {
 
     @Autowired
     public UserService(UserRepository userRepository,
+                       PasswordEncoder passwordEncoder,
                        UserRegistrationValidator userRegistrationValidator,
                        JwtTokenProvider jwtTokenProvider) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
         this.userRegistrationValidator = userRegistrationValidator;
         this.jwtTokenProvider = jwtTokenProvider;
+    }
+
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.userRegistrationValidator = new UserRegistrationValidator(userRepository);
+        this.jwtTokenProvider = new JwtTokenProvider();
     }
 
     @Transactional
@@ -75,5 +90,12 @@ public class UserService {
         if (id != -1) {
             userRepository.deleteById(id);
         }
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        UserDetails userDetails = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Could not find user with username: " + username));
+        return userDetails;
     }
 }

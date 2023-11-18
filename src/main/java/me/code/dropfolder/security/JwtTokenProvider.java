@@ -1,5 +1,6 @@
-package me.code.dropfolder.auth;
+package me.code.dropfolder.security;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -9,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
-import java.util.UUID;
 
 /**
  * Provides functionality for generating and validating JWT tokens.
@@ -17,7 +17,7 @@ import java.util.UUID;
 @Component
 public class JwtTokenProvider {
 
-    private final String secret = UUID.randomUUID().toString();
+    private final String secret = "keyboardcat-fwjfw732842ndeADEUfui39429824jdmedwiaei";
 
     private final Key key = Keys.hmacShaKeyFor(secret.getBytes());
 
@@ -58,7 +58,20 @@ public class JwtTokenProvider {
                     .parseClaimsJws(token);
             return true;
         } catch (JwtException jwtException) {
-            throw new InvalidTokenException("The provided token is not valid.");
+            return false;
         }
+    }
+
+    public String getTokenUsername(String token) {
+        return getTokenClaim(token, "username", String.class);
+    }
+
+    public <T> T getTokenClaim(String token, String type, Class<T> returnType) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.get(type, returnType);
     }
 }
