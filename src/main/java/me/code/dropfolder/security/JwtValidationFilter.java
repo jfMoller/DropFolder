@@ -28,27 +28,38 @@ public class JwtValidationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(
             HttpServletRequest request,
             HttpServletResponse response,
-            FilterChain filterChain)
+            FilterChain securityFilterChain)
             throws ServletException, IOException {
 
         String token = request.getHeader("Authorization");
+        boolean isMissingToken = (token == null || token.isBlank());
 
-        // Allow requests to login and signup endpoints without a valid token
-        if (isPermittedEndpoint(request)) {
-            filterChain.doFilter(request, response);
-        } else if (jwtTokenProvider.isValidToken(token)) {
-            String username = jwtTokenProvider.getTokenUsername(token);
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-            var auth = new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword());
-            SecurityContextHolder.getContext().setAuthentication(auth);
-            filterChain.doFilter(request, response);
-        } else {
-            throw new InvalidTokenException("The provided token is not valid.");
+        if (isMissingToken) { // proceed without authentication
+            securityFilterChain.doFilter(request, response);
         }
+
+        boolean isValidToken = jwtTokenProvider.isValidToken(token);
+
+        if (isValidToken) { // proceed with authentication
+            setAuthenticationContext(token);
+            securityFilterChain.doFilter(request, response);
+
+        } else throw new InvalidTokenException("The provided token is not valid.");
     }
 
-    private boolean isPermittedEndpoint(HttpServletRequest request) {
-        String path = request.getRequestURI();
-        return path.equals("/api/user/login") || path.equals("/api/user/sign-up");
+    private void setAuthenticationContext(String token) {
+        UserDetails userDetails = getUserDetails(token);
+        var authToken = getAuthToken(userDetails);
+        SecurityContextHolder.getContext().setAuthentication(authToken);
+    }
+
+    private UserDetails getUserDetails(String token) {
+        String username = jwtTokenProvider.getTokenUsername(token);
+        return this.userDetailsService.loadUserByUsername(username);
+    }
+
+    private UsernamePasswordAuthenticationToken getAuthToken(UserDetails user) {
+        return new UsernamePasswordAuthenticationToken(
+                user.getUsername(), user.getPassword(), user.getAuthorities());
     }
 }
