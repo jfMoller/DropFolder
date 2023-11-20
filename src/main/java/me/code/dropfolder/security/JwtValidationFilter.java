@@ -4,6 +4,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.NonNull;
 import me.code.dropfolder.exception.type.InvalidTokenException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,8 +16,9 @@ import java.io.IOException;
 
 public class JwtValidationFilter extends OncePerRequestFilter {
 
-    private final UserDetailsService userDetailsService;
+    private static final String AUTHORIZATION_HEADER = "Authorization";
 
+    private final UserDetailsService userDetailsService;
     private final JwtTokenProvider jwtTokenProvider;
 
     public JwtValidationFilter(UserDetailsService userDetailsService) {
@@ -27,30 +29,57 @@ public class JwtValidationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain securityFilterChain)
-            throws ServletException, IOException {
+            @NonNull HttpServletResponse response,
+            @NonNull FilterChain securityFilterChain)
+            throws ServletException, IOException, InvalidTokenException {
 
-        String token = request.getHeader("Authorization");
-        boolean isMissingToken = (token == null || token.isBlank());
+        String token = request.getHeader(AUTHORIZATION_HEADER);
 
-        if (isMissingToken) { // proceed without authentication
-            securityFilterChain.doFilter(request, response);
+        if (isTokenMissing(token)) {
+            continueFilterChain(securityFilterChain, request, response);
+
+        } else if (isValidToken(token)) {
+            continueFilterChainWithAuthentication(token, securityFilterChain, request, response);
+
+        } else {
+            throw new InvalidTokenException("The provided token is not valid.");
         }
+    }
 
-        boolean isValidToken = jwtTokenProvider.isValidToken(token);
+    private boolean isTokenMissing(String token) {
+        return token == null || token.isBlank();
+    }
 
-        if (isValidToken) { // proceed with authentication
-            setAuthenticationContext(token);
-            securityFilterChain.doFilter(request, response);
+    private boolean isValidToken(String token) {
+        return jwtTokenProvider.isValidToken(token);
+    }
 
-        } else throw new InvalidTokenException("The provided token is not valid.");
+    private void continueFilterChain(
+            FilterChain filterChain,
+            HttpServletRequest request,
+            HttpServletResponse response)
+            throws ServletException, IOException {
+        try {
+            filterChain.doFilter(request, response);
+        } catch (ServletException | IOException e) {
+            handleFilterChainException(e);
+        }
     }
 
     private void setAuthenticationContext(String token) {
         UserDetails userDetails = getUserDetails(token);
         var authToken = getAuthToken(userDetails);
         SecurityContextHolder.getContext().setAuthentication(authToken);
+    }
+
+    private void continueFilterChainWithAuthentication(
+            String token,
+            FilterChain filterChain,
+            HttpServletRequest request,
+            HttpServletResponse response)
+            throws ServletException, IOException {
+        setAuthenticationContext(token);
+        continueFilterChain(filterChain, request, response);
     }
 
     private UserDetails getUserDetails(String token) {
@@ -61,5 +90,13 @@ public class JwtValidationFilter extends OncePerRequestFilter {
     private UsernamePasswordAuthenticationToken getAuthToken(UserDetails user) {
         return new UsernamePasswordAuthenticationToken(
                 user.getUsername(), user.getPassword(), user.getAuthorities());
+    }
+
+    private void handleFilterChainException(Exception exception) throws ServletException, IOException {
+        if (exception instanceof ServletException) {
+            throw new ServletException("Servlet exception: " + exception.getMessage());
+        } else if (exception instanceof IOException) {
+            throw new IOException("IO exception: " + exception.getMessage());
+        }
     }
 }
