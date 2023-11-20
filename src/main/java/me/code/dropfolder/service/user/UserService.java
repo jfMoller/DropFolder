@@ -1,14 +1,15 @@
 package me.code.dropfolder.service.user;
 
-import me.code.dropfolder.security.JwtTokenProvider;
-import me.code.dropfolder.dto.Auth;
 import me.code.dropfolder.dto.Success;
-import me.code.dropfolder.exception.type.*;
+import me.code.dropfolder.exception.type.AccountRegistrationException;
+import me.code.dropfolder.exception.type.NonUniqueValueException;
+import me.code.dropfolder.exception.type.PasswordFormattingException;
+import me.code.dropfolder.exception.type.UsernameFormattingException;
 import me.code.dropfolder.model.User;
 import me.code.dropfolder.repository.UserRepository;
+import me.code.dropfolder.security.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -38,13 +39,6 @@ public class UserService implements UserDetailsService {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.userRegistrationValidator = new UserRegistrationValidator(userRepository);
-        this.jwtTokenProvider = new JwtTokenProvider();
-    }
-
     @Transactional
     public Success registerUser(String username, String password)
             throws UsernameFormattingException, PasswordFormattingException,
@@ -57,24 +51,14 @@ public class UserService implements UserDetailsService {
         userRegistrationValidator.findNonUniqueUsername(username);
 
         try {
-            userRepository.save(new User(username, password));
+            String encryptedPassword = passwordEncoder.encode(password);
+            userRepository.save(new User(username, encryptedPassword));
             return new Success(
                     HttpStatus.CREATED,
                     "Successfully registered a new account with username: " + username);
 
         } catch (Exception exception) {
             throw new AccountRegistrationException("Failed to register a new account: " + exception.getMessage());
-        }
-    }
-
-    public Auth login(String username, String password) throws LoginFailureException {
-        try {
-            User user = userRepository.findUser(username, password);
-            String token = jwtTokenProvider.generateToken(user);
-            return new Auth(HttpStatus.OK, "Login successful", token);
-
-        } catch (Exception exception) {
-            throw new LoginFailureException("Login failed; double-check your username and password and try again");
         }
     }
 
@@ -93,9 +77,8 @@ public class UserService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserDetails userDetails = userRepository.findByUsername(username)
+    public User loadUserByUsername(String username) throws UsernameNotFoundException {
+        return userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Could not find user with username: " + username));
-        return userDetails;
     }
 }

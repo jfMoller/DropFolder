@@ -1,6 +1,7 @@
 package me.code.dropfolder.security;
 
 import me.code.dropfolder.repository.UserRepository;
+import me.code.dropfolder.service.user.UserRegistrationValidator;
 import me.code.dropfolder.service.user.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,9 +24,8 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity security, UserDetailsService userDetailsService) throws Exception {
         security.csrf(AbstractHttpConfigurer::disable)
                 .addFilterAfter(new JwtValidationFilter(userDetailsService), UsernamePasswordAuthenticationFilter.class)
-                .authorizeHttpRequests(authorize ->
-                        authorize.requestMatchers("/api/user/sign-up", "/api/user/login").permitAll()
-                                .anyRequest().authenticated());
+                .authorizeHttpRequests(authorize -> authorize.requestMatchers("/api/user/sign-up", "/api/login").permitAll()
+                        .anyRequest().authenticated());
         return security.build();
     }
 
@@ -40,8 +40,12 @@ public class SecurityConfig {
     }
 
     @Bean
-    public UserDetailsService userDetailsService(PasswordEncoder encoder, UserRepository userRepository) {
-        return new UserService(userRepository, encoder);
+    public UserDetailsService userDetailsService(
+            UserRepository userRepository,
+            PasswordEncoder passwordEncoder,
+            UserRegistrationValidator userRegistrationValidator,
+            JwtTokenProvider jwtTokenProvider) {
+        return new UserService(userRepository, passwordEncoder, userRegistrationValidator, jwtTokenProvider);
     }
 
     @Bean

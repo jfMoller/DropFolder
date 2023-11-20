@@ -25,10 +25,4 @@ public class UserController {
         return result.toResponseEntity();
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<Success> login(@RequestBody UserCredentials dto) {
-        Success result = userService.login(dto.username(), dto.password());
-        return result.toResponseEntity();
-    }
-
 }
