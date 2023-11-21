@@ -37,11 +37,12 @@ public class File {
     @JoinColumn(name = "folder_id")
     private Folder folder;
 
-    public File(MultipartFile file) throws IOException {
+    public File(MultipartFile file, Folder folder) throws IOException {
         this.name = StringUtils.cleanPath(file.getOriginalFilename());
         this.contentType = file.getContentType();
         this.size = file.getSize();
         this.data = file.getBytes();
+        this.folder = folder;
     }
 
 }
