@@ -23,11 +23,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END FROM User u WHERE u.username = :username")
     boolean isPreexistingUsername(@Param("username") String username);
 
-    @Query("SELECT CASE WHEN COUNT(u) > 0 THEN false ELSE true END FROM User u WHERE u.username NOT LIKE :username" +
-            " AND u.password = :password")
-    boolean isInvalidUsername(@Param("username") String username, @Param("password") String password);
+    @Query("SELECT CASE WHEN COUNT(u) = 0 THEN true ELSE false END FROM User u WHERE u.username = :username")
+    boolean isInvalidUsername(@Param("username") String username);
 
-    @Query("SELECT CASE WHEN COUNT(u) > 0 THEN false ELSE true END FROM User u WHERE u.username = :username" +
+    @Query("SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END FROM User u WHERE u.username = :username" +
             " AND u.password NOT LIKE :password")
     boolean isInvalidPassword(@Param("username") String username, @Param("password") String password);
 

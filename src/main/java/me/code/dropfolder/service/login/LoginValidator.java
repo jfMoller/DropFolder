@@ -16,29 +16,43 @@ public class LoginValidator {
         this.userRepository = userRepository;
     }
 
-    public void validateUsername(UserCredentials dto) {
-        boolean isInvalidUsername = userRepository.isInvalidUsername(dto.username(), dto.password());
-        if (isInvalidUsername) {
+    public void findValidationErrors(UserCredentials dto) {
+        if (isInvalidUsername(dto.username())) {
             throw new InvalidCredentialsException(
-                    "You've entered an invalid username",
-                    new ValidationErrorDetail(
-                            dto.getClass().getSimpleName(),
-                            "username",
-                            dto.password(),
-                            "Is not a valid username for this account"));
+                    "You have entered an invalid username",
+                    getValidationErrorDetail(dto.username()));
+        } else {
+            if (isInvalidPassword(dto.username(), dto.password())) {
+                throw new InvalidCredentialsException(
+                        "You have entered an invalid password",
+                        getValidationErrorDetail());
+            }
         }
     }
 
-    public void validatePassword(UserCredentials dto) {
-        boolean isInvalidUsername = userRepository.isInvalidPassword(dto.username(), dto.password());
-        if (isInvalidUsername) {
-            throw new InvalidCredentialsException(
-                    "You've entered an invalid password",
-                    new ValidationErrorDetail(
-                            dto.getClass().getSimpleName(),
-                            "password",
-                            dto.password(),
-                            "Is not a valid password for this account"));
-        }
+    private boolean isInvalidUsername(String username) {
+        return userRepository.isInvalidUsername(username);
     }
+
+    private boolean isInvalidPassword(String username, String password) {
+        return userRepository.isInvalidPassword(username, password);
+    }
+
+    private ValidationErrorDetail getValidationErrorDetail() {
+        return new ValidationErrorDetail(
+                "JSON",
+                "password",
+                "{hidden}",
+                "Is not a valid password");
+    }
+
+    private ValidationErrorDetail getValidationErrorDetail(String username) {
+        return new ValidationErrorDetail(
+                "JSON",
+                "username",
+                username,
+                "Is not a valid username");
+    }
+
+
 }

@@ -55,8 +55,7 @@ public class LoginController {
             }
 
         } catch (Exception exception) {
-            loginValidator.validateUsername(dto);
-            loginValidator.validatePassword(dto);
+            loginValidator.findValidationErrors(dto);
         }
         return null;
     }
