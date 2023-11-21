@@ -7,6 +7,7 @@ import me.code.dropfolder.exception.type.CouldNotFindFolderException;
 import me.code.dropfolder.exception.type.FileUploadFailureException;
 import me.code.dropfolder.model.File;
 import me.code.dropfolder.model.Folder;
+import me.code.dropfolder.model.User;
 import me.code.dropfolder.repository.FileRepository;
 import me.code.dropfolder.repository.FolderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,15 +32,17 @@ public class FileService {
 
         try {
             Folder targetFolder = loadFolderById(folderId);
-            boolean isUserOwnerOfTargetFolder = (targetFolder.getUser().getId() == userId);
+            User owner = targetFolder.getUser();
 
-            if (isUserOwnerOfTargetFolder) {
+            if (isUserOwnerOfTargetFolder(userId, owner)) {
+                File file = new File(attachedFile, targetFolder);
+                setUniqueFileName(file);
 
-                fileRepository.save(new File(attachedFile, targetFolder));
+                fileRepository.save(file);
 
                 return new Success(
                         HttpStatus.CREATED,
-                        "Successfully uploaded a new file with name: " + attachedFile.getOriginalFilename());
+                        "Successfully uploaded a new file with name: " + file.getName());
             } else throw new CouldNotFindFolderException(
                     "Could not find folder with id: {" + folderId + "} owned by user with id: {" + userId + "}");
 
@@ -47,6 +50,36 @@ public class FileService {
             throw new FileUploadFailureException("File upload failed",
                     new UploadErrorDetail(attachedFile, exception));
         }
+    }
+
+    private boolean isUserOwnerOfTargetFolder(long userId, User owner) {
+        return (owner.getId() == userId);
+    }
+
+    private void setUniqueFileName(File file) {
+        String attachedFileName = file.getName();
+        Folder folder = file.getFolder();
+        String uniqueFileName = getUniqueFileName(folder, attachedFileName);
+        file.setName(uniqueFileName);
+    }
+
+    private String getUniqueFileName(Folder folder, String fileName) {
+        String uniqueFileName = fileName;
+        int count = 2;
+
+        int dotIndex = fileName.indexOf(".");
+        String fileNameWithoutFileExtension = fileName.substring(0, dotIndex);
+        String fileExtension = fileName.substring(dotIndex);
+
+        while (folderHasExistingFileByName(folder, uniqueFileName)) {
+            uniqueFileName = fileNameWithoutFileExtension + "_" + count + fileExtension;
+            count++;
+        }
+        return uniqueFileName;
+    }
+
+    private boolean folderHasExistingFileByName(Folder folder, String fileName) {
+        return fileRepository.isPreexistingFile(folder, fileName);
     }
 
     @Transactional
@@ -69,7 +102,7 @@ public class FileService {
         }
     }
 
-    public Folder loadFolderById(long folderId) throws CouldNotFindFolderException {
+    private Folder loadFolderById(long folderId) throws CouldNotFindFolderException {
         return folderRepository.findById(folderId)
                 .orElseThrow(() -> new CouldNotFindFolderException("could not find folder with id: {" + folderId + "}"));
     }

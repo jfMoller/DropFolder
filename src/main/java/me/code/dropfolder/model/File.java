@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -38,7 +37,7 @@ public class File {
     private Folder folder;
 
     public File(MultipartFile file, Folder folder) throws IOException {
-        this.name = StringUtils.cleanPath(file.getOriginalFilename());
+        this.name = file.getOriginalFilename();
         this.contentType = file.getContentType();
         this.size = file.getSize();
         this.data = file.getBytes();

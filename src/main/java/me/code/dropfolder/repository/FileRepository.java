@@ -1,6 +1,7 @@
 package me.code.dropfolder.repository;
 
 import me.code.dropfolder.model.File;
+import me.code.dropfolder.model.Folder;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,4 +15,7 @@ public interface FileRepository extends JpaRepository<File, Long> {
 
     @Query("SELECT f.id FROM File f WHERE f.name = :name")
     Optional<Long> findFileId(@Param("name") String name);
+
+    @Query("SELECT CASE WHEN COUNT(fi) > 0 THEN true ELSE false END FROM File fi WHERE fi.folder = :folder AND fi.name = :fileName")
+    boolean isPreexistingFile(Folder folder, @Param("fileName") String fileName);
 }
