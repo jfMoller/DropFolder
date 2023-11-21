@@ -16,7 +16,7 @@ public class LoginValidator {
         this.userRepository = userRepository;
     }
 
-    public void findValidationErrors(UserCredentials dto) {
+    public void validateUserCredentials(UserCredentials dto) throws InvalidCredentialsException {
         if (isInvalidUsername(dto.username())) {
             throw new InvalidCredentialsException(
                     "You have entered an invalid username",
@@ -53,6 +53,5 @@ public class LoginValidator {
                 username,
                 "Is not a valid username");
     }
-
 
 }

@@ -4,6 +4,7 @@ import me.code.dropfolder.dto.Auth;
 import me.code.dropfolder.dto.Success;
 import me.code.dropfolder.dto.UserCredentials;
 import me.code.dropfolder.exception.type.AuthenticationFailureException;
+import me.code.dropfolder.exception.type.LoginFailureException;
 import me.code.dropfolder.model.User;
 import me.code.dropfolder.security.JwtTokenProvider;
 import me.code.dropfolder.service.login.LoginValidator;
@@ -42,7 +43,8 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Success> login(@RequestBody UserCredentials dto) {
+    public ResponseEntity<Success> login(@RequestBody UserCredentials dto)
+            throws AuthenticationFailureException, LoginFailureException {
         try {
             if (isUserAuthenticated(dto.username(), dto.password())) {
                 User user = userService.loadUserByUsername(dto.username());
@@ -55,9 +57,10 @@ public class LoginController {
             }
 
         } catch (Exception exception) {
-            loginValidator.findValidationErrors(dto);
+            // Throws specific exceptions if the username or password are invalid
+            loginValidator.validateUserCredentials(dto);
+            throw new LoginFailureException("Unable to login: " + exception.getMessage());
         }
-        return null;
     }
 
     private boolean isUserAuthenticated(String username, String password) {
