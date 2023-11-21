@@ -66,6 +66,11 @@ public class JwtTokenProvider {
         return getTokenClaim(token, "username", String.class);
     }
 
+    public long getTokenUserId(String token) {
+        String userIdString = getTokenClaim(token, "id", String.class);
+        return Long.parseLong(userIdString);
+    }
+
     public <T> T getTokenClaim(String token, String type, Class<T> returnType) {
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(key)
