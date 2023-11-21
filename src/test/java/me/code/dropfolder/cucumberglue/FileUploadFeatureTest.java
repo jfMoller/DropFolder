@@ -4,8 +4,9 @@ import io.cucumber.java.After;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import me.code.dropfolder.controller.LoginController;
 import me.code.dropfolder.dto.Success;
-import me.code.dropfolder.exception.ExceptionHandler;
+import me.code.dropfolder.dto.UserCredentials;
 import me.code.dropfolder.model.File;
 import me.code.dropfolder.service.file.FileService;
 import me.code.dropfolder.service.user.UserService;
@@ -24,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class FileUploadFeatureTest {
 
-    private final ExceptionHandler exceptionHandler;
+    private final LoginController loginController;
     private final UserService userService;
     private final FileService fileService;
 
@@ -32,8 +33,8 @@ public class FileUploadFeatureTest {
     private String mockUsername;
     private MultipartFile attachedMockFile;
 
-    public FileUploadFeatureTest(ExceptionHandler exceptionHandler, UserService userService, FileService fileService) {
-        this.exceptionHandler = exceptionHandler;
+    public FileUploadFeatureTest(LoginController loginController, UserService userService, FileService fileService) {
+        this.loginController = loginController;
         this.userService = userService;
         this.fileService = fileService;
     }
@@ -57,7 +58,8 @@ public class FileUploadFeatureTest {
 
     @Given("the user is logged in with username {string} and password {string}")
     public void theUserIsLoggedInWithUsernameAndPassword(String username, String password) {
-        ResponseEntity<Success> responseEntity = userService.login(username, password).toResponseEntity();
+        UserCredentials dto = new UserCredentials(username, password);
+        ResponseEntity<Success> responseEntity = loginController.login(dto);
         responseEntityStatus = (HttpStatus) responseEntity.getStatusCode();
 
         assertEquals(HttpStatus.OK, responseEntityStatus);
