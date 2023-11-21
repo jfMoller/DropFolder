@@ -4,6 +4,7 @@ import io.cucumber.java.After;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import jakarta.transaction.Transactional;
 import me.code.dropfolder.dto.Success;
 import me.code.dropfolder.dto.UserCredentials;
 import me.code.dropfolder.exception.GlobalExceptionHandler;
@@ -46,6 +47,7 @@ public class UserRegistrationFeatureTest {
     /**
      * Clean up method to delete mock user data after a scenario.
      */
+    @Transactional
     @After("@cleanupRegistrationData")
     public void cleanUpMockData() {
         userService.deleteUser(userCredentials.username());
@@ -81,12 +83,12 @@ public class UserRegistrationFeatureTest {
 
         } catch (UsernameFormattingException exception) {
             // Handles username formatting exception
-            ResponseEntity<Error> responseEntity = globalExceptionHandler.handleUsernameFormattingException(exception);
+            ResponseEntity<Error> responseEntity = globalExceptionHandler.handleFormattingException(exception);
             responseEntityStatus = (HttpStatus) responseEntity.getStatusCode();
 
         } catch (PasswordFormattingException exception) {
             // Handles password formatting exception
-            ResponseEntity<Error> responseEntity = globalExceptionHandler.handlePasswordFormattingException(exception);
+            ResponseEntity<Error> responseEntity = globalExceptionHandler.handleFormattingException(exception);
             responseEntityStatus = (HttpStatus) responseEntity.getStatusCode();
         }
     }
