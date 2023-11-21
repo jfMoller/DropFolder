@@ -6,7 +6,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import me.code.dropfolder.dto.Success;
 import me.code.dropfolder.dto.UserCredentials;
-import me.code.dropfolder.exception.ExceptionHandler;
+import me.code.dropfolder.exception.GlobalExceptionHandler;
 import me.code.dropfolder.exception.dto.Error;
 import me.code.dropfolder.exception.type.PasswordFormattingException;
 import me.code.dropfolder.exception.type.UsernameFormattingException;
@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
  */
 public class UserRegistrationFeatureTest {
 
-    private final ExceptionHandler exceptionHandler;
+    private final GlobalExceptionHandler globalExceptionHandler;
     private final UserService userService;
     private final UserRegistrationValidator userRegistrationValidator;
     private UserCredentials userCredentials;
@@ -33,12 +33,12 @@ public class UserRegistrationFeatureTest {
     /**
      * Constructor for UserRegistrationFeatureTest class.
      *
-     * @param exceptionHandler          handles for handling generic and specific runtime exceptions.
+     * @param globalExceptionHandler          handles for handling generic and specific runtime exceptions.
      * @param userService               handles user registration.
      * @param userRegistrationValidator handles validation of user credentials.
      */
-    public UserRegistrationFeatureTest(ExceptionHandler exceptionHandler, UserService userService, UserRegistrationValidator userRegistrationValidator) {
-        this.exceptionHandler = exceptionHandler;
+    public UserRegistrationFeatureTest(GlobalExceptionHandler globalExceptionHandler, UserService userService, UserRegistrationValidator userRegistrationValidator) {
+        this.globalExceptionHandler = globalExceptionHandler;
         this.userService = userService;
         this.userRegistrationValidator = userRegistrationValidator;
     }
@@ -81,12 +81,12 @@ public class UserRegistrationFeatureTest {
 
         } catch (UsernameFormattingException exception) {
             // Handles username formatting exception
-            ResponseEntity<Error> responseEntity = exceptionHandler.handleUsernameFormattingException(exception);
+            ResponseEntity<Error> responseEntity = globalExceptionHandler.handleUsernameFormattingException(exception);
             responseEntityStatus = (HttpStatus) responseEntity.getStatusCode();
 
         } catch (PasswordFormattingException exception) {
             // Handles password formatting exception
-            ResponseEntity<Error> responseEntity = exceptionHandler.handlePasswordFormattingException(exception);
+            ResponseEntity<Error> responseEntity = globalExceptionHandler.handlePasswordFormattingException(exception);
             responseEntityStatus = (HttpStatus) responseEntity.getStatusCode();
         }
     }

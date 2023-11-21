@@ -4,9 +4,9 @@ import me.code.dropfolder.dto.Auth;
 import me.code.dropfolder.dto.Success;
 import me.code.dropfolder.dto.UserCredentials;
 import me.code.dropfolder.exception.type.AuthenticationFailureException;
-import me.code.dropfolder.exception.type.LoginFailureException;
 import me.code.dropfolder.model.User;
 import me.code.dropfolder.security.JwtTokenProvider;
+import me.code.dropfolder.service.login.LoginValidator;
 import me.code.dropfolder.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,14 +25,18 @@ public class LoginController {
 
     private final UserService userService;
 
+    private final LoginValidator loginValidator;
+
     private final JwtTokenProvider jwtTokenProvider;
 
     @Autowired
     public LoginController(
             AuthenticationProvider authenticationProvider,
+            LoginValidator loginValidator,
             UserService userDetailsService,
             JwtTokenProvider jwtTokenProvider) {
         this.authenticationProvider = authenticationProvider;
+        this.loginValidator = loginValidator;
         this.userService = userDetailsService;
         this.jwtTokenProvider = jwtTokenProvider;
     }
@@ -51,8 +55,10 @@ public class LoginController {
             }
 
         } catch (Exception exception) {
-            throw new LoginFailureException("Invalid username or password, please try again");
+            loginValidator.validateUsername(dto);
+            loginValidator.validatePassword(dto);
         }
+        return null;
     }
 
     private boolean isUserAuthenticated(String username, String password) {

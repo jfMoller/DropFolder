@@ -4,12 +4,10 @@ import lombok.Getter;
 import me.code.dropfolder.exception.dto.ValidationErrorDetail;
 
 @Getter
-public class PasswordFormattingException extends RuntimeException {
-    private ValidationErrorDetail validationError;
+public class PasswordFormattingException extends FormattingException {
 
     public PasswordFormattingException(String message, ValidationErrorDetail validationError) {
-        super(message);
-        this.validationError = validationError;
+        super(message, validationError);
     }
 
 }
