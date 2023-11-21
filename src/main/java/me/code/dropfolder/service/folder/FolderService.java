@@ -1,13 +1,14 @@
 package me.code.dropfolder.service.folder;
 
 import me.code.dropfolder.dto.Success;
+import me.code.dropfolder.exception.type.CouldNotFindUserException;
+import me.code.dropfolder.exception.type.FolderCreationFailureException;
 import me.code.dropfolder.model.Folder;
 import me.code.dropfolder.model.User;
 import me.code.dropfolder.repository.FolderRepository;
 import me.code.dropfolder.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,17 +23,22 @@ public class FolderService {
     }
 
     public Success createFolder(String name, long userId) {
-        User user = loadUserById(userId);
+        try {
+            User user = loadUserById(userId);
+            String uniqueName = getUniqueFolderName(user, name);
 
-        String uniqueName = requireUniqueFolderName(user, name);
+            Folder newFolder = new Folder(uniqueName, user);
+            folderRepository.save(newFolder);
 
-        Folder newFolder = new Folder(uniqueName, user);
-        folderRepository.save(newFolder);
+            return new Success(HttpStatus.CREATED, "Successfully created a new folder with name: " + uniqueName);
 
-        return new Success(HttpStatus.CREATED, "Successfully created a new folder with name: " + uniqueName);
+        } catch (Exception exception) {
+            throw new FolderCreationFailureException(
+                    "Failed to new create folder: " + exception.getMessage());
+        }
     }
 
-    private String requireUniqueFolderName(User user, String name) {
+    private String getUniqueFolderName(User user, String name) {
         String uniqueName = name;
         int count = 2;
 
@@ -48,8 +54,8 @@ public class FolderService {
     }
 
 
-    public User loadUserById(long userId) throws UsernameNotFoundException {
+    public User loadUserById(long userId) throws CouldNotFindUserException {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Could not find user with id: " + userId));
+                .orElseThrow(() -> new CouldNotFindUserException("could not find user with id: {" + userId + "}"));
     }
 }
