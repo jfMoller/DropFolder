@@ -3,10 +3,7 @@ package me.code.dropfolder.service.file;
 import jakarta.transaction.Transactional;
 import me.code.dropfolder.dto.Success;
 import me.code.dropfolder.exception.dto.UploadErrorDetail;
-import me.code.dropfolder.exception.type.CouldNotFindFileException;
-import me.code.dropfolder.exception.type.CouldNotFindFolderException;
-import me.code.dropfolder.exception.type.FileDeletionFailureException;
-import me.code.dropfolder.exception.type.FileUploadFailureException;
+import me.code.dropfolder.exception.type.*;
 import me.code.dropfolder.model.File;
 import me.code.dropfolder.model.Folder;
 import me.code.dropfolder.model.User;
@@ -50,6 +47,24 @@ public class FileService {
         } catch (Exception exception) {
             throw new FileUploadFailureException("File upload failed",
                     new UploadErrorDetail(attachedFile, exception));
+        }
+    }
+
+    public File fetchFileForDownload(long userId, long folderId, long fileId) {
+        try {
+            Folder targetFolder = loadFolderById(folderId);
+            User folderUser = targetFolder.getUser();
+
+            if (isUserOwnerOfTargetFolder(userId, folderUser) && isFilePartOfTargetFolder(fileId, targetFolder)) {
+
+                return loadFileById(fileId);
+
+            } else throw new CouldNotFindFileException(
+                    "Could not find file with id: {" + fileId + "} in folder with id: {" + folderId + "}" +
+                            " owned by user with id: {" + userId + "}");
+
+        } catch (Exception exception) {
+            throw new FileDownloadFailureException("Failed to fetch file: " + exception.getMessage());
         }
     }
 
@@ -125,6 +140,11 @@ public class FileService {
         if (id != -1) {
             fileRepository.deleteById(id);
         }
+    }
+
+    private File loadFileById(long fileId) throws CouldNotFindFileException {
+        return fileRepository.findById(fileId)
+                .orElseThrow(() -> new CouldNotFindFileException("could not find file with id: {" + fileId + "}"));
     }
 
     private Folder loadFolderById(long folderId) throws CouldNotFindFolderException {

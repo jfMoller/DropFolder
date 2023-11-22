@@ -1,9 +1,12 @@
 package me.code.dropfolder.controller;
 
 import me.code.dropfolder.dto.Success;
+import me.code.dropfolder.model.File;
 import me.code.dropfolder.security.JwtTokenProvider;
+import me.code.dropfolder.service.file.FileDownloadBuilder;
 import me.code.dropfolder.service.file.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,6 +33,19 @@ public class FileController {
 
         Success result = fileService.upload(userId, folderId, file);
         return result.toResponseEntity();
+    }
+
+    @GetMapping("/download")
+    public ResponseEntity<ByteArrayResource> download(
+            @RequestHeader("Authorization") String token,
+            @RequestParam long folderId,
+            @RequestParam long fileId) {
+        long userId = jwtTokenProvider.getTokenUserId(token);
+
+        File requestedFile = fileService.fetchFileForDownload(userId, folderId, fileId);
+        FileDownloadBuilder builder = new FileDownloadBuilder(requestedFile);
+
+        return builder.buildResponseEntity();
     }
 
     @DeleteMapping("/delete")

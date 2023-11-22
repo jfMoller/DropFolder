@@ -10,6 +10,8 @@ import java.util.Optional;
 
 public interface FileRepository extends JpaRepository<File, Long> {
 
+    Optional<File> findById(long id);
+
     @Query("SELECT f FROM File f WHERE f.name = :name")
     File getFile(@Param("name") String name);
 
