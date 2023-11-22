@@ -9,6 +9,7 @@ import me.code.dropfolder.model.Folder;
 import me.code.dropfolder.model.User;
 import me.code.dropfolder.repository.FileRepository;
 import me.code.dropfolder.repository.FolderRepository;
+import me.code.dropfolder.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -20,19 +21,22 @@ import java.util.Optional;
 public class FileService {
     private final FileRepository fileRepository;
     private final FolderRepository folderRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public FileService(FileRepository fileRepository, FolderRepository folderRepository) {
+    public FileService(FileRepository fileRepository, FolderRepository folderRepository, UserRepository userRepository) {
         this.fileRepository = fileRepository;
         this.folderRepository = folderRepository;
+        this.userRepository = userRepository;
     }
 
     public Success upload(long userId, long folderId, MultipartFile attachedFile) throws FileUploadFailureException {
         try {
+            User requestingUser = loadUserById(userId);
             Folder targetFolder = loadFolderById(folderId);
-            User folderUser = targetFolder.getUser();
+            long targetFolderId = targetFolder.getId();
 
-            if (isUserOwnerOfTargetFolder(userId, folderUser)) {
+            if (isUserOwnerOfTargetFolder(requestingUser, targetFolderId)) {
                 File file = new File(attachedFile, targetFolder);
                 setUniqueFileName(file);
 
@@ -52,11 +56,12 @@ public class FileService {
 
     public File fetchFileForDownload(long userId, long folderId, long fileId) {
         try {
+            User requestingUser = loadUserById(userId);
             Folder targetFolder = loadFolderById(folderId);
-            User folderUser = targetFolder.getUser();
+            long targetFolderId = targetFolder.getId();
 
-            if (isUserOwnerOfTargetFolder(userId, folderUser) && isFilePartOfTargetFolder(fileId, targetFolder)) {
-
+            if (isUserOwnerOfTargetFolder(requestingUser, targetFolderId) &&
+                    isFilePartOfTargetFolder(fileId, targetFolder)) {
                 return loadFileById(fileId);
 
             } else throw new CouldNotFindFileException(
@@ -70,10 +75,12 @@ public class FileService {
 
     public Success delete(long userId, long folderId, long fileId) throws FileUploadFailureException {
         try {
+            User requestingUser = loadUserById(userId);
             Folder targetFolder = loadFolderById(folderId);
-            User folderUser = targetFolder.getUser();
+            long targetFolderId = targetFolder.getId();
 
-            if (isUserOwnerOfTargetFolder(userId, folderUser) && isFilePartOfTargetFolder(fileId, targetFolder)) {
+            if (isUserOwnerOfTargetFolder(requestingUser, targetFolderId) &&
+                    isFilePartOfTargetFolder(fileId, targetFolder)) {
                 fileRepository.deleteById(fileId);
 
                 return new Success(
@@ -88,11 +95,11 @@ public class FileService {
         }
     }
 
-    private boolean isUserOwnerOfTargetFolder(long userId, User owner) {
-        return (owner.getId() == userId);
+    public boolean isUserOwnerOfTargetFolder(User user, long folderId) {
+        return folderRepository.isUserOwnerOfTargetFolder(user, folderId);
     }
 
-    private boolean isFilePartOfTargetFolder(long fileId, Folder folder) {
+    public boolean isFilePartOfTargetFolder(long fileId, Folder folder) {
         return fileRepository.isFilePartOfFolder(fileId, folder);
     }
 
@@ -118,13 +125,8 @@ public class FileService {
         return uniqueFileName;
     }
 
-    private boolean folderHasExistingFileByName(Folder folder, String fileName) {
+    public boolean folderHasExistingFileByName(Folder folder, String fileName) {
         return fileRepository.isPreexistingFile(folder, fileName);
-    }
-
-    @Transactional
-    public File getFile(String name) {
-        return fileRepository.getFile(name);
     }
 
     public long getFileId(String fileName) {
@@ -150,6 +152,18 @@ public class FileService {
     private Folder loadFolderById(long folderId) throws CouldNotFindFolderException {
         return folderRepository.findById(folderId)
                 .orElseThrow(() -> new CouldNotFindFolderException("could not find folder with id: {" + folderId + "}"));
+    }
+
+    public User loadUserById(long userId) throws CouldNotFindUserException {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new CouldNotFindUserException("Could not find user with id: " + userId));
+    }
+
+    @Transactional
+    public File loadFileByFolderAndName(Folder folder, String fileName) throws CouldNotFindFileException {
+        return fileRepository.findByFolderAndName(folder, fileName)
+                .orElseThrow(() -> new CouldNotFindFileException(
+                        "could not find file with folder_id: {" + folder.getId() + "} and name: {" + fileName + "}"));
     }
 
 }

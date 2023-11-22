@@ -12,8 +12,8 @@ public interface FileRepository extends JpaRepository<File, Long> {
 
     Optional<File> findById(long id);
 
-    @Query("SELECT f FROM File f WHERE f.name = :name")
-    File getFile(@Param("name") String name);
+    @Query("SELECT f FROM File f WHERE f.folder = :folder AND f.name = :name")
+    Optional<File> findByFolderAndName(Folder folder, String name);
 
     @Query("SELECT f.id FROM File f WHERE f.name = :fileName")
     Optional<Long> findFileId(@Param("fileName") String fileName);

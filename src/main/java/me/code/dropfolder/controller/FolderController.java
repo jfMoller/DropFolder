@@ -26,7 +26,7 @@ public class FolderController {
     public ResponseEntity<Success> create(@RequestHeader("Authorization") String token, @RequestBody CreateFolderDto dto) {
         long userId = jwtTokenProvider.getTokenUserId(token);
 
-        Success result = folderService.createFolder(dto.name(), userId);
+        Success result = folderService.createFolder(userId, dto.name());
         return result.toResponseEntity();
     }
 

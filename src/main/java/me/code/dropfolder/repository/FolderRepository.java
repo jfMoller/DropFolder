@@ -14,4 +14,10 @@ public interface FolderRepository extends JpaRepository<Folder, Long> {
 
     @Query("SELECT CASE WHEN COUNT(f) > 0 THEN true ELSE false END FROM Folder f WHERE f.user = :user AND f.name = :name")
     boolean isPreexistingFolder(@Param("user") User user, @Param("name") String name);
+
+    @Query("SELECT f FROM Folder f WHERE f.user = :user AND f.name = :name")
+    Optional<Folder> findIdByUserAndFolderName (User user, String name);
+
+    @Query("SELECT CASE WHEN COUNT(f) > 0 THEN true ELSE false END FROM Folder f WHERE f.user = :user AND f.id = :folderId")
+    boolean isUserOwnerOfTargetFolder(User user, long folderId);
 }

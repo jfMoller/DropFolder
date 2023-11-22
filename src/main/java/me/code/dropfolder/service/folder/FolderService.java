@@ -1,6 +1,7 @@
 package me.code.dropfolder.service.folder;
 
 import me.code.dropfolder.dto.Success;
+import me.code.dropfolder.exception.type.CouldNotFindFolderException;
 import me.code.dropfolder.exception.type.CouldNotFindUserException;
 import me.code.dropfolder.exception.type.FolderCreationFailureException;
 import me.code.dropfolder.model.Folder;
@@ -22,7 +23,7 @@ public class FolderService {
         this.userRepository = userRepository;
     }
 
-    public Success createFolder(String name, long userId) {
+    public Success createFolder(long userId, String name) {
         try {
             User user = loadUserById(userId);
             String uniqueName = getUniqueFolderName(user, name);
@@ -49,8 +50,14 @@ public class FolderService {
         return uniqueName;
     }
 
-    private boolean userHasExistingFolderByName(User user, String name) {
+    public boolean userHasExistingFolderByName(User user, String name) {
         return folderRepository.isPreexistingFolder(user, name);
+    }
+
+    public Folder loadFolderByUserAndName(User user, String folderName) {
+        return folderRepository.findIdByUserAndFolderName(user, folderName)
+                .orElseThrow(() -> new CouldNotFindFolderException(
+                        "could not find folder with name: {" + folderName + "}, owned by user with id: {" + user.getId() + "}"));
     }
 
 
