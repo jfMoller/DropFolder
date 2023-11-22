@@ -3,7 +3,9 @@ package me.code.dropfolder.service.file;
 import jakarta.transaction.Transactional;
 import me.code.dropfolder.dto.Success;
 import me.code.dropfolder.exception.dto.UploadErrorDetail;
+import me.code.dropfolder.exception.type.CouldNotFindFileException;
 import me.code.dropfolder.exception.type.CouldNotFindFolderException;
+import me.code.dropfolder.exception.type.FileDeletionFailureException;
 import me.code.dropfolder.exception.type.FileUploadFailureException;
 import me.code.dropfolder.model.File;
 import me.code.dropfolder.model.Folder;
@@ -29,12 +31,11 @@ public class FileService {
     }
 
     public Success upload(long userId, long folderId, MultipartFile attachedFile) throws FileUploadFailureException {
-
         try {
             Folder targetFolder = loadFolderById(folderId);
-            User owner = targetFolder.getUser();
+            User folderUser = targetFolder.getUser();
 
-            if (isUserOwnerOfTargetFolder(userId, owner)) {
+            if (isUserOwnerOfTargetFolder(userId, folderUser)) {
                 File file = new File(attachedFile, targetFolder);
                 setUniqueFileName(file);
 
@@ -52,8 +53,32 @@ public class FileService {
         }
     }
 
+    public Success delete(long userId, long folderId, long fileId) throws FileUploadFailureException {
+        try {
+            Folder targetFolder = loadFolderById(folderId);
+            User folderUser = targetFolder.getUser();
+
+            if (isUserOwnerOfTargetFolder(userId, folderUser) && isFilePartOfTargetFolder(fileId, targetFolder)) {
+                fileRepository.deleteById(fileId);
+
+                return new Success(
+                        HttpStatus.OK,
+                        "Successfully deleted a file with id: {" + fileId + "}");
+            } else throw new CouldNotFindFileException(
+                    "Could not find file with id: {" + fileId + "} in folder with id: {" + folderId + "}" +
+                            " owned by user with id: {" + userId + "}");
+
+        } catch (Exception exception) {
+            throw new FileDeletionFailureException("Failed to delete file: " + exception.getMessage());
+        }
+    }
+
     private boolean isUserOwnerOfTargetFolder(long userId, User owner) {
         return (owner.getId() == userId);
+    }
+
+    private boolean isFilePartOfTargetFolder(long fileId, Folder folder) {
+        return fileRepository.isFilePartOfFolder(fileId, folder);
     }
 
     private void setUniqueFileName(File file) {
@@ -87,16 +112,16 @@ public class FileService {
         return fileRepository.getFile(name);
     }
 
-    public long getFileId(String name) {
-        Optional<Long> id = fileRepository.findFileId(name);
+    public long getFileId(String fileName) {
+        Optional<Long> id = fileRepository.findFileId(fileName);
         if (id.isPresent()) {
             return id.get();
         } else return -1;
     }
 
     @Transactional
-    public void deleteFile(String username) {
-        long id = getFileId(username);
+    public void deleteFile(String fileName) {
+        long id = getFileId(fileName);
         if (id != -1) {
             fileRepository.deleteById(id);
         }

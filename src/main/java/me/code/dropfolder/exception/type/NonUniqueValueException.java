@@ -4,12 +4,11 @@ import lombok.Getter;
 import me.code.dropfolder.exception.dto.ValidationErrorDetail;
 
 @Getter
-public class NonUniqueValueException extends RuntimeException {
+public class NonUniqueValueException extends FormattingException {
     private ValidationErrorDetail validationError;
 
     public NonUniqueValueException(String message, ValidationErrorDetail validationError) {
-        super(message);
-        this.validationError = validationError;
+        super(message, validationError);
     }
 
 }

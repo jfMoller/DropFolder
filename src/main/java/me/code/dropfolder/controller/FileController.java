@@ -24,9 +24,22 @@ public class FileController {
 
     @PostMapping("/upload/{folderId}")
     public ResponseEntity<Success> upload(
-            @RequestHeader("Authorization") String token, @PathVariable long folderId, @RequestParam("file") MultipartFile file) {
+            @RequestHeader("Authorization") String token,
+            @PathVariable long folderId, @RequestParam("file") MultipartFile file) {
         long userId = jwtTokenProvider.getTokenUserId(token);
+
         Success result = fileService.upload(userId, folderId, file);
+        return result.toResponseEntity();
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<Success> delete(
+            @RequestHeader("Authorization") String token,
+            @RequestParam long folderId,
+            @RequestParam long fileId) {
+        long userId = jwtTokenProvider.getTokenUserId(token);
+
+        Success result = fileService.delete(userId, folderId, fileId);
         return result.toResponseEntity();
     }
 
