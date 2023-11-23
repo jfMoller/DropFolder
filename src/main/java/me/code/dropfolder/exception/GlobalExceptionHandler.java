@@ -36,11 +36,17 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return buildResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, exception);
     }
 
-    // Handles exceptions related to formatting/vaidation exceptions
-    @ExceptionHandler({UsernameFormattingException.class, PasswordFormattingException.class, NonUniqueValueException.class, InvalidCredentialsException.class})
-    public ResponseEntity<Error> handleFormattingException(FormattingException exception) {
+    // Handles exceptions related to validation exceptions
+    @ExceptionHandler({UsernameValidationException.class, PasswordValidationException.class, NonUniqueValueException.class, InvalidCredentialsException.class})
+    public ResponseEntity<Error> handleFormattingException(ValidationException exception) {
         ValidationErrorDetail validationError = exception.getValidationError();
         return buildResponseEntity(HttpStatus.CONFLICT, exception, validationError);
+    }
+
+    // Handles exceptions related to values or object that could not be found
+    @ExceptionHandler({CouldNotFindUserException.class, CouldNotFindFolderException.class, CouldNotFindFileException.class})
+    public ResponseEntity<Error> handleNotFoundException(Exception exception) {
+        return buildResponseEntity(HttpStatus.NOT_FOUND, exception);
     }
 
     // Handles exceptions related to file uploads

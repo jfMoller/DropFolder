@@ -4,9 +4,9 @@ import lombok.Getter;
 import me.code.dropfolder.exception.dto.ValidationErrorDetail;
 
 @Getter
-public class UsernameFormattingException extends FormattingException {
+public class PasswordValidationException extends ValidationException {
 
-    public UsernameFormattingException(String message, ValidationErrorDetail validationError) {
+    public PasswordValidationException(String message, ValidationErrorDetail validationError) {
         super(message, validationError);
     }
 

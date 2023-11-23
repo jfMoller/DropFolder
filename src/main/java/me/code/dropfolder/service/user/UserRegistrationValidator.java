@@ -2,8 +2,8 @@ package me.code.dropfolder.service.user;
 
 import me.code.dropfolder.exception.dto.ValidationErrorDetail;
 import me.code.dropfolder.exception.type.NonUniqueValueException;
-import me.code.dropfolder.exception.type.PasswordFormattingException;
-import me.code.dropfolder.exception.type.UsernameFormattingException;
+import me.code.dropfolder.exception.type.PasswordValidationException;
+import me.code.dropfolder.exception.type.UsernameValidationException;
 import me.code.dropfolder.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -76,20 +76,20 @@ public class UserRegistrationValidator {
      *
      * @param username The username to be validated.
      * @param password The password to be validated.
-     * @throws UsernameFormattingException If there are formatting errors in the username.
-     * @throws PasswordFormattingException If there are formatting errors in the password.
+     * @throws UsernameValidationException If there are formatting errors in the username.
+     * @throws PasswordValidationException If there are formatting errors in the password.
      */
     public void findFormattingErrors(String username, String password) {
         findNullValues(username, password);
 
         if (hasUsernameFormattingError(username)) {
-            throw new UsernameFormattingException(
+            throw new UsernameValidationException(
                     INVALID_USERNAME_ERROR_MESSAGE,
                     generateValidationErrorDetail(USERNAME_FIELD, username));
 
         }
         if (hasPasswordFormattingError(password)) {
-            throw new PasswordFormattingException(
+            throw new PasswordValidationException(
                     INVALID_PASSWORD_ERROR_MESSAGE,
                     generateValidationErrorDetail(PASSWORD_FIELD, password));
         }
@@ -101,19 +101,19 @@ public class UserRegistrationValidator {
      *
      * @param username The username to be validated.
      * @param password The password to be validated.
-     * @throws UsernameFormattingException If the username is null.
-     * @throws PasswordFormattingException If the password is null.
+     * @throws UsernameValidationException If the username is null.
+     * @throws PasswordValidationException If the password is null.
      */
     public void findNullValues(String username, String password) {
         if (username == null) {
-            throw new UsernameFormattingException(
+            throw new UsernameValidationException(
                     INVALID_USERNAME_ERROR_MESSAGE,
                     generateValidationErrorDetail(USERNAME_FIELD, null));
 
         }
 
         if (password == null) {
-            throw new PasswordFormattingException(
+            throw new PasswordValidationException(
                     INVALID_PASSWORD_ERROR_MESSAGE,
                     generateValidationErrorDetail(PASSWORD_FIELD, null));
 

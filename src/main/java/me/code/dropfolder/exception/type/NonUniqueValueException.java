@@ -4,7 +4,7 @@ import lombok.Getter;
 import me.code.dropfolder.exception.dto.ValidationErrorDetail;
 
 @Getter
-public class NonUniqueValueException extends FormattingException {
+public class NonUniqueValueException extends ValidationException {
     private ValidationErrorDetail validationError;
 
     public NonUniqueValueException(String message, ValidationErrorDetail validationError) {

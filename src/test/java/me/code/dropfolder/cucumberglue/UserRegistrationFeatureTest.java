@@ -6,11 +6,11 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import jakarta.transaction.Transactional;
 import me.code.dropfolder.dto.Success;
-import me.code.dropfolder.dto.UserCredentials;
+import me.code.dropfolder.dto.UserCredentialsDto;
 import me.code.dropfolder.exception.GlobalExceptionHandler;
 import me.code.dropfolder.exception.dto.Error;
-import me.code.dropfolder.exception.type.PasswordFormattingException;
-import me.code.dropfolder.exception.type.UsernameFormattingException;
+import me.code.dropfolder.exception.type.PasswordValidationException;
+import me.code.dropfolder.exception.type.UsernameValidationException;
 import me.code.dropfolder.service.user.UserRegistrationValidator;
 import me.code.dropfolder.service.user.UserService;
 import org.junit.jupiter.api.Assertions;
@@ -28,7 +28,7 @@ public class UserRegistrationFeatureTest {
     private final GlobalExceptionHandler globalExceptionHandler;
     private final UserService userService;
     private final UserRegistrationValidator userRegistrationValidator;
-    private UserCredentials userCredentials;
+    private UserCredentialsDto userCredentialsDto;
     private HttpStatus responseEntityStatus;
 
     /**
@@ -50,7 +50,7 @@ public class UserRegistrationFeatureTest {
     @Transactional
     @After("@cleanupRegistrationData")
     public void cleanUpMockData() {
-        userService.deleteUser(userCredentials.username());
+        userService.deleteUser(userCredentialsDto.username());
     }
 
     /**
@@ -61,11 +61,11 @@ public class UserRegistrationFeatureTest {
      */
     @Given("a user provides valid registration credentials with username {string} and password {string}")
     public void aUserProvidesValidRegistrationDetails(String username, String password) {
-        userCredentials = new UserCredentials(username, password);
+        userCredentialsDto = new UserCredentialsDto(username, password);
 
-        Assertions.assertNotNull(userCredentials);
-        Assertions.assertFalse(userRegistrationValidator.hasUsernameFormattingError(userCredentials.username()));
-        Assertions.assertFalse(userRegistrationValidator.hasPasswordFormattingError(userCredentials.password()));
+        Assertions.assertNotNull(userCredentialsDto);
+        Assertions.assertFalse(userRegistrationValidator.hasUsernameFormattingError(userCredentialsDto.username()));
+        Assertions.assertFalse(userRegistrationValidator.hasPasswordFormattingError(userCredentialsDto.password()));
     }
 
     /**
@@ -76,17 +76,17 @@ public class UserRegistrationFeatureTest {
     public void theUserSubmitsTheRegistrationForm() {
         try {
             ResponseEntity<Success> responseEntity =
-                    userService.registerUser(userCredentials.username(), userCredentials.password()).toResponseEntity();
+                    userService.registerUser(userCredentialsDto.username(), userCredentialsDto.password()).toResponseEntity();
             responseEntityStatus = (HttpStatus) responseEntity.getStatusCode();
 
             Assertions.assertNotNull(responseEntityStatus);
 
-        } catch (UsernameFormattingException exception) {
+        } catch (UsernameValidationException exception) {
             // Handles username formatting exception
             ResponseEntity<Error> responseEntity = globalExceptionHandler.handleFormattingException(exception);
             responseEntityStatus = (HttpStatus) responseEntity.getStatusCode();
 
-        } catch (PasswordFormattingException exception) {
+        } catch (PasswordValidationException exception) {
             // Handles password formatting exception
             ResponseEntity<Error> responseEntity = globalExceptionHandler.handleFormattingException(exception);
             responseEntityStatus = (HttpStatus) responseEntity.getStatusCode();
@@ -109,12 +109,12 @@ public class UserRegistrationFeatureTest {
         username = setAsNullIfFlagged(username);
         password = setAsNullIfFlagged(password);
 
-        userCredentials = new UserCredentials(username, password);
-        Assertions.assertNotNull(userCredentials);
+        userCredentialsDto = new UserCredentialsDto(username, password);
+        Assertions.assertNotNull(userCredentialsDto);
 
         Assertions.assertTrue(
-                userRegistrationValidator.hasUsernameFormattingError(userCredentials.username()) ||
-                        userRegistrationValidator.hasPasswordFormattingError(userCredentials.password()));
+                userRegistrationValidator.hasUsernameFormattingError(userCredentialsDto.username()) ||
+                        userRegistrationValidator.hasPasswordFormattingError(userCredentialsDto.password()));
     }
 
     /**

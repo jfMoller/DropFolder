@@ -1,10 +1,7 @@
 package me.code.dropfolder.service.user;
 
 import me.code.dropfolder.dto.Success;
-import me.code.dropfolder.exception.type.AccountRegistrationException;
-import me.code.dropfolder.exception.type.NonUniqueValueException;
-import me.code.dropfolder.exception.type.PasswordFormattingException;
-import me.code.dropfolder.exception.type.UsernameFormattingException;
+import me.code.dropfolder.exception.type.*;
 import me.code.dropfolder.model.User;
 import me.code.dropfolder.repository.UserRepository;
 import me.code.dropfolder.security.JwtTokenUtil;
@@ -41,7 +38,7 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public Success registerUser(String username, String password)
-            throws UsernameFormattingException, PasswordFormattingException,
+            throws UsernameValidationException, PasswordValidationException,
             NonUniqueValueException, AccountRegistrationException {
 
         // Throws exceptions if there are formatting errors
@@ -79,6 +76,6 @@ public class UserService implements UserDetailsService {
     @Override
     public User loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Could not find user with username: " + username));
+                .orElseThrow(() -> new CouldNotFindUserException("Could not find user with username: " + username));
     }
 }

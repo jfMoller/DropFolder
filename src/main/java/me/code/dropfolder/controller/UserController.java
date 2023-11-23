@@ -1,7 +1,7 @@
 package me.code.dropfolder.controller;
 
 import me.code.dropfolder.dto.Success;
-import me.code.dropfolder.dto.UserCredentials;
+import me.code.dropfolder.dto.UserCredentialsDto;
 import me.code.dropfolder.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,7 @@ public class UserController {
     }
 
     @PostMapping("/sign-up")
-    public ResponseEntity<Success> signUp(@RequestBody UserCredentials dto) {
+    public ResponseEntity<Success> signUp(@RequestBody UserCredentialsDto dto) {
         Success result = userService.registerUser(dto.username(), dto.password());
         return result.toResponseEntity();
     }

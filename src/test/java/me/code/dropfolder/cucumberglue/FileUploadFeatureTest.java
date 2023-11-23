@@ -6,7 +6,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import me.code.dropfolder.controller.LoginController;
 import me.code.dropfolder.dto.Success;
-import me.code.dropfolder.dto.UserCredentials;
+import me.code.dropfolder.dto.UserCredentialsDto;
 import me.code.dropfolder.model.File;
 import me.code.dropfolder.model.Folder;
 import me.code.dropfolder.model.User;
@@ -81,7 +81,7 @@ public class FileUploadFeatureTest {
 
     @Given("the user is logged in with username {string} and password {string}")
     public void theUserIsLoggedInWithUsernameAndPassword(String username, String password) {
-        UserCredentials dto = new UserCredentials(username, password);
+        UserCredentialsDto dto = new UserCredentialsDto(username, password);
         ResponseEntity<Success> responseEntity = loginController.login(dto);
         responseEntityStatus = (HttpStatus) responseEntity.getStatusCode();
 

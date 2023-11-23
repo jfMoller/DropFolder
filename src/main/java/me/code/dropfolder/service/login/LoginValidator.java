@@ -1,6 +1,6 @@
 package me.code.dropfolder.service.login;
 
-import me.code.dropfolder.dto.UserCredentials;
+import me.code.dropfolder.dto.UserCredentialsDto;
 import me.code.dropfolder.exception.dto.ValidationErrorDetail;
 import me.code.dropfolder.exception.type.InvalidCredentialsException;
 import me.code.dropfolder.repository.UserRepository;
@@ -16,7 +16,7 @@ public class LoginValidator {
         this.userRepository = userRepository;
     }
 
-    public void validateUserCredentials(UserCredentials dto) throws InvalidCredentialsException {
+    public void validateUserCredentials(UserCredentialsDto dto) throws InvalidCredentialsException {
         if (isInvalidUsername(dto.username())) {
             throw new InvalidCredentialsException(
                     "You have entered an invalid username",
