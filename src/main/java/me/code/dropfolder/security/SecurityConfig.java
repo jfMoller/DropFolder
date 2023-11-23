@@ -24,7 +24,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity security, UserDetailsService userDetailsService) throws Exception {
         security.csrf(AbstractHttpConfigurer::disable)
                 .addFilterAfter(new JwtValidationFilter(userDetailsService), UsernamePasswordAuthenticationFilter.class)
-                .authorizeHttpRequests(authorize -> authorize.requestMatchers("/api/user/sign-up", "/api/login").permitAll()
+                .authorizeHttpRequests(authorize -> authorize.requestMatchers("/api/user/register", "/api/login").permitAll()
                         .anyRequest().authenticated());
         return security.build();
     }
