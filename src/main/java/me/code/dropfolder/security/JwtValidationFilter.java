@@ -19,11 +19,11 @@ public class JwtValidationFilter extends OncePerRequestFilter {
     private static final String AUTHORIZATION_HEADER = "Authorization";
 
     private final UserDetailsService userDetailsService;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtTokenUtil jwtTokenUtil;
 
     public JwtValidationFilter(UserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
-        this.jwtTokenProvider = new JwtTokenProvider();
+        this.jwtTokenUtil = new JwtTokenUtil();
     }
 
     @Override
@@ -51,7 +51,7 @@ public class JwtValidationFilter extends OncePerRequestFilter {
     }
 
     private boolean isValidToken(String token) {
-        return jwtTokenProvider.isValidToken(token);
+        return jwtTokenUtil.isValidToken(token);
     }
 
     private void continueFilterChain(
@@ -83,7 +83,7 @@ public class JwtValidationFilter extends OncePerRequestFilter {
     }
 
     private UserDetails getUserDetails(String token) {
-        String username = jwtTokenProvider.getTokenUsername(token);
+        String username = jwtTokenUtil.getTokenUsername(token);
         return this.userDetailsService.loadUserByUsername(username);
     }
 

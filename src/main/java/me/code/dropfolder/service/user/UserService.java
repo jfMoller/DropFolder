@@ -7,7 +7,7 @@ import me.code.dropfolder.exception.type.PasswordFormattingException;
 import me.code.dropfolder.exception.type.UsernameFormattingException;
 import me.code.dropfolder.model.User;
 import me.code.dropfolder.repository.UserRepository;
-import me.code.dropfolder.security.JwtTokenProvider;
+import me.code.dropfolder.security.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -26,17 +26,17 @@ public class UserService implements UserDetailsService {
 
     private final UserRegistrationValidator userRegistrationValidator;
 
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtTokenUtil jwtTokenUtil;
 
     @Autowired
     public UserService(UserRepository userRepository,
                        PasswordEncoder passwordEncoder,
                        UserRegistrationValidator userRegistrationValidator,
-                       JwtTokenProvider jwtTokenProvider) {
+                       JwtTokenUtil jwtTokenUtil) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.userRegistrationValidator = userRegistrationValidator;
-        this.jwtTokenProvider = jwtTokenProvider;
+        this.jwtTokenUtil = jwtTokenUtil;
     }
 
     @Transactional

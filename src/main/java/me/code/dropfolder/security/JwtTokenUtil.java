@@ -15,14 +15,14 @@ import java.security.Key;
  * Provides functionality for generating and validating JWT tokens.
  */
 @Component
-public class JwtTokenProvider {
+public class JwtTokenUtil {
 
     private final String secret = "keyboardcat-fwjfw732842ndeADEUfui39429824jdmedwiaei";
 
     private final Key key = Keys.hmacShaKeyFor(secret.getBytes());
 
     @Autowired
-    public JwtTokenProvider() {
+    public JwtTokenUtil() {
     }
 
     /**

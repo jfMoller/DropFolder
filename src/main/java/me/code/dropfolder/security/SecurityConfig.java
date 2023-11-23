@@ -44,8 +44,8 @@ public class SecurityConfig {
             UserRepository userRepository,
             PasswordEncoder passwordEncoder,
             UserRegistrationValidator userRegistrationValidator,
-            JwtTokenProvider jwtTokenProvider) {
-        return new UserService(userRepository, passwordEncoder, userRegistrationValidator, jwtTokenProvider);
+            JwtTokenUtil jwtTokenUtil) {
+        return new UserService(userRepository, passwordEncoder, userRegistrationValidator, jwtTokenUtil);
     }
 
     @Bean

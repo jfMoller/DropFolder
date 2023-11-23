@@ -6,7 +6,7 @@ import me.code.dropfolder.dto.UserCredentials;
 import me.code.dropfolder.exception.type.AuthenticationFailureException;
 import me.code.dropfolder.exception.type.LoginFailureException;
 import me.code.dropfolder.model.User;
-import me.code.dropfolder.security.JwtTokenProvider;
+import me.code.dropfolder.security.JwtTokenUtil;
 import me.code.dropfolder.service.login.LoginValidator;
 import me.code.dropfolder.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,18 +28,18 @@ public class LoginController {
 
     private final LoginValidator loginValidator;
 
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtTokenUtil jwtTokenUtil;
 
     @Autowired
     public LoginController(
             AuthenticationProvider authenticationProvider,
             LoginValidator loginValidator,
             UserService userDetailsService,
-            JwtTokenProvider jwtTokenProvider) {
+            JwtTokenUtil jwtTokenUtil) {
         this.authenticationProvider = authenticationProvider;
         this.loginValidator = loginValidator;
         this.userService = userDetailsService;
-        this.jwtTokenProvider = jwtTokenProvider;
+        this.jwtTokenUtil = jwtTokenUtil;
     }
 
     @PostMapping("/login")
@@ -48,7 +48,7 @@ public class LoginController {
         try {
             if (isUserAuthenticated(dto.username(), dto.password())) {
                 User user = userService.loadUserByUsername(dto.username());
-                String token = jwtTokenProvider.generateToken(user);
+                String token = jwtTokenUtil.generateToken(user);
 
                 return new Auth(HttpStatus.OK, "Login successful", token).toResponseEntity();
 
