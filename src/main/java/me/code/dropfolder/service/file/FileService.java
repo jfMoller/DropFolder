@@ -2,7 +2,7 @@ package me.code.dropfolder.service.file;
 
 import jakarta.transaction.Transactional;
 import me.code.dropfolder.dto.SuccessDto;
-import me.code.dropfolder.exception.dto.detail.UploadErrorDetail;
+import me.code.dropfolder.exception.dto.detail.FileOperationErrorDetail;
 import me.code.dropfolder.exception.type.*;
 import me.code.dropfolder.model.File;
 import me.code.dropfolder.model.Folder;
@@ -50,7 +50,7 @@ public class FileService {
 
         } catch (Exception exception) {
             throw new FileUploadFailureException("File upload failed",
-                    new UploadErrorDetail(attachedFile, exception));
+                    new FileOperationErrorDetail(attachedFile, exception));
         }
     }
 

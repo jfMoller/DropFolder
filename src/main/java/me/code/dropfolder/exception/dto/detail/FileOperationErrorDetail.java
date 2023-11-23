@@ -12,7 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Getter
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class UploadErrorDetail extends ErrorDetail {
+public class FileOperationErrorDetail extends ErrorDetail {
 
     private String rejectedFileName;
 
@@ -23,12 +23,12 @@ public class UploadErrorDetail extends ErrorDetail {
     private String message;
 
     /**
-     * Constructs an instance of UploadErrorDetail based on the given MultipartFile and exception.
+     * Constructs an instance of FileOperationErrorDetail based on the given MultipartFile and exception.
      *
      * @param file      The MultipartFile that caused the upload error.
      * @param exception The exception associated with the upload error.
      */
-    public UploadErrorDetail(MultipartFile file, Exception exception) {
+    public FileOperationErrorDetail(MultipartFile file, Exception exception) {
         this.rejectedFileName = file.getOriginalFilename();
         this.rejectedContentType = file.getContentType();
         this.rejectedSize = file.getSize();
