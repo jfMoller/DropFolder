@@ -1,6 +1,7 @@
 package me.code.dropfolder.service.folder;
 
 import me.code.dropfolder.dto.SuccessDto;
+import me.code.dropfolder.exception.dto.detail.FolderOperationErrorDetail;
 import me.code.dropfolder.exception.type.CouldNotFindFolderException;
 import me.code.dropfolder.exception.type.CouldNotFindUserException;
 import me.code.dropfolder.exception.type.FolderCreationFailureException;
@@ -34,8 +35,8 @@ public class FolderService {
             return new SuccessDto(HttpStatus.CREATED, "Successfully created a new folder with name: " + uniqueName);
 
         } catch (Exception exception) {
-            throw new FolderCreationFailureException(
-                    "Failed to new create folder: " + exception.getMessage());
+            throw new FolderCreationFailureException("Failed to new create folder",
+                    new FolderOperationErrorDetail(name, exception.getMessage()));
         }
     }
 

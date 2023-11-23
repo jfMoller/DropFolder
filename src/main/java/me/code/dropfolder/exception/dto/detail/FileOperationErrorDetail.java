@@ -3,35 +3,24 @@ package me.code.dropfolder.exception.dto.detail;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
- * A data class representing an upload error.
- * It extends the ErrorDetail class and provides additional information specific to file uploading errors.
+ * A data class representing an error detail related to file operations.
+ * It extends the ErrorDetail class and provides additional information specific to file operation errors.
  */
 @Getter
 @Data
 @EqualsAndHashCode(callSuper = false)
 public class FileOperationErrorDetail extends ErrorDetail {
 
-    private String rejectedFileName;
-
-    private String rejectedContentType;
-
-    private Long rejectedSize;
-
     private String message;
 
     /**
-     * Constructs an instance of FileOperationErrorDetail based on the given MultipartFile and exception.
+     * Constructs a FileOperationErrorDetail with the specified error message.
      *
-     * @param file      The MultipartFile that caused the upload error.
-     * @param exception The exception associated with the upload error.
+     * @param message The error message describing the file operation error.
      */
-    public FileOperationErrorDetail(MultipartFile file, Exception exception) {
-        this.rejectedFileName = file.getOriginalFilename();
-        this.rejectedContentType = file.getContentType();
-        this.rejectedSize = file.getSize();
-        this.message = exception.getLocalizedMessage();
+    public FileOperationErrorDetail(String message) {
+        this.message = message;
     }
 }

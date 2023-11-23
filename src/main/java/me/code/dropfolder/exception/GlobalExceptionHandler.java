@@ -1,10 +1,7 @@
 package me.code.dropfolder.exception;
 
 import me.code.dropfolder.exception.dto.ErrorDto;
-import me.code.dropfolder.exception.dto.detail.ErrorDetail;
-import me.code.dropfolder.exception.dto.detail.FileOperationErrorDetail;
-import me.code.dropfolder.exception.dto.detail.FolderOperationErrorDetail;
-import me.code.dropfolder.exception.dto.detail.ValidationErrorDetail;
+import me.code.dropfolder.exception.dto.detail.*;
 import me.code.dropfolder.exception.type.*;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -103,10 +100,22 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      * @param exception The file operation exception to be handled.
      * @return A ResponseEntity containing an ErrorDto with details about the file operation exception.
      */
-    @ExceptionHandler({FileUploadFailureException.class, FileDownloadFailureException.class, FileDeletionFailureException.class})
+    @ExceptionHandler({FileDownloadFailureException.class, FileDeletionFailureException.class})
     public ResponseEntity<ErrorDto> handleFileOperationsFailureException(FileOperationException exception) {
         FileOperationErrorDetail operationError = exception.getFileOperationErrorDetail();
         return buildResponseEntity(HttpStatus.BAD_REQUEST, exception, operationError);
+    }
+
+    /**
+     * Handles exceptions specific to file upload failures and returns a ResponseEntity with an ErrorDto.
+     *
+     * @param exception The file upload failure exception to be handled.
+     * @return A ResponseEntity containing an ErrorDto with details about the file upload failure.
+     */
+    @ExceptionHandler({FileUploadFailureException.class})
+    public ResponseEntity<ErrorDto> handleFileUploadFailureException(FileUploadFailureException exception) {
+        FileUploadErrorDetail uploadError = exception.getUploadError();
+        return buildResponseEntity(HttpStatus.BAD_REQUEST, exception, uploadError);
     }
 
     /**

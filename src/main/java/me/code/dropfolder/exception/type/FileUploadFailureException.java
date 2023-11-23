@@ -1,21 +1,25 @@
 package me.code.dropfolder.exception.type;
 
 import lombok.Getter;
-import me.code.dropfolder.exception.dto.detail.FileOperationErrorDetail;
+import me.code.dropfolder.exception.dto.detail.FileUploadErrorDetail;
 
 /**
- * Exception class representing a failure in uploading a file.
+ * Exception class representing a failure in file upload operations.
+ * It extends the RuntimeException class and includes details about the file upload error.
  */
 @Getter
-public class FileUploadFailureException extends FileOperationException {
+public class FileUploadFailureException extends RuntimeException {
+
+    private final FileUploadErrorDetail uploadError;
 
     /**
-     * Constructs a FileUploadFailureException with the specified detail message and upload error details.
+     * Constructs a FileUploadFailureException with the specified error message and file upload error details.
      *
-     * @param message     the detail message.
-     * @param uploadError the details of the upload error.
+     * @param message     A message describing the file upload failure.
+     * @param uploadError The details of the file upload failure.
      */
-    public FileUploadFailureException(String message, FileOperationErrorDetail uploadError) {
-        super(message, uploadError);
+    public FileUploadFailureException(String message, FileUploadErrorDetail uploadError) {
+        super(message);
+        this.uploadError = uploadError;
     }
 }

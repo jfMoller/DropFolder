@@ -3,6 +3,7 @@ package me.code.dropfolder.service.file;
 import jakarta.transaction.Transactional;
 import me.code.dropfolder.dto.SuccessDto;
 import me.code.dropfolder.exception.dto.detail.FileOperationErrorDetail;
+import me.code.dropfolder.exception.dto.detail.FileUploadErrorDetail;
 import me.code.dropfolder.exception.type.*;
 import me.code.dropfolder.model.File;
 import me.code.dropfolder.model.Folder;
@@ -49,8 +50,8 @@ public class FileService {
                     "Could not find folder with id: {" + folderId + "} owned by user with id: {" + userId + "}");
 
         } catch (Exception exception) {
-            throw new FileUploadFailureException("File upload failed",
-                    new FileOperationErrorDetail(attachedFile, exception));
+            throw new FileUploadFailureException("Failed to upload file",
+                    new FileUploadErrorDetail(attachedFile, exception));
         }
     }
 
@@ -69,7 +70,8 @@ public class FileService {
                             " owned by user with id: {" + userId + "}");
 
         } catch (Exception exception) {
-            throw new FileDownloadFailureException("Failed to fetch file: " + exception.getMessage());
+            throw new FileDownloadFailureException("Failed to download file",
+                    new FileOperationErrorDetail(exception.getMessage()));
         }
     }
 
@@ -91,7 +93,8 @@ public class FileService {
                             " owned by user with id: {" + userId + "}");
 
         } catch (Exception exception) {
-            throw new FileDeletionFailureException("Failed to delete file: " + exception.getMessage());
+            throw new FileDownloadFailureException("Failed to delete file",
+                    new FileOperationErrorDetail(exception.getMessage()));
         }
     }
 
