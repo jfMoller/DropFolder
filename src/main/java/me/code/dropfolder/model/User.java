@@ -12,6 +12,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Entity class representing a user in the system.
+ * <p>
+ * The User class implements the UserDetails interface from Spring Security, which is user for authentication and authorization purposes.
+ */
 @Entity
 @Table(name = "users")
 @Getter
@@ -28,15 +33,29 @@ public class User implements UserDetails {
     @Column(name = "password", nullable = false)
     private String password;
 
+    /**
+     * A list of folders belonging to the user.
+     */
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Folder> folders;
 
+    /**
+     * Constructs a new User instance with the provided username and password.
+     *
+     * @param username The unique username of the user.
+     * @param password The password associated with the user's account.
+     */
     public User(String username, String password) {
         this.username = username;
         this.password = password;
         this.folders = new ArrayList<>();
     }
 
+    /**
+     * Returns the authorities granted to the user. In this case, a single role "ROLE_USER" is assigned to every user.
+     *
+     * @return A collection of GrantedAuthority representing the user's roles.
+     */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));

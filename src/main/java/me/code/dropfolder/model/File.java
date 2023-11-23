@@ -8,6 +8,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
+/**
+ * Entity class representing a file in the system.
+ */
 @Entity
 @Table(name = "files")
 @Getter
@@ -32,10 +35,20 @@ public class File {
     @Column(name = "data", nullable = false)
     private byte[] data;
 
+    /**
+     * The folder to which the file belongs.
+     */
     @ManyToOne
     @JoinColumn(name = "folder_id")
     private Folder folder;
 
+    /**
+     * Constructor for creating a File entity from a multipart file and associating it with a folder.
+     *
+     * @param file   The multipart file from which to create the File entity.
+     * @param folder The folder to which the file belongs.
+     * @throws IOException If an I/O error occurs while reading the file data.
+     */
     public File(MultipartFile file, Folder folder) throws IOException {
         this.name = file.getOriginalFilename();
         this.contentType = file.getContentType();
