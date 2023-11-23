@@ -1,6 +1,6 @@
 package me.code.dropfolder.controller;
 
-import me.code.dropfolder.dto.Success;
+import me.code.dropfolder.dto.SuccessDto;
 import me.code.dropfolder.model.File;
 import me.code.dropfolder.security.JwtTokenUtil;
 import me.code.dropfolder.service.file.FileDownloadBuilder;
@@ -40,15 +40,15 @@ public class FileController {
      * @param token    The authorization token containing the user's credentials.
      * @param folderId The ID of the target folder for the file upload.
      * @param file     The multipart file to be uploaded.
-     * @return ResponseEntity containing the success DTO.
+     * @return ResponseEntity containing the SuccessDto.
      */
     @PostMapping("/upload/{folderId}")
-    public ResponseEntity<Success> upload(
+    public ResponseEntity<SuccessDto> upload(
             @RequestHeader("Authorization") String token,
             @PathVariable long folderId, @RequestParam("file") MultipartFile file) {
         long userId = jwtTokenUtil.getTokenUserId(token);
 
-        Success result = fileService.upload(userId, folderId, file);
+        SuccessDto result = fileService.upload(userId, folderId, file);
         return result.toResponseEntity();
     }
 
@@ -80,16 +80,16 @@ public class FileController {
      * @param token    The authorization token containing the user's credentials.
      * @param folderId The ID of the target folder for the file deletion.
      * @param fileId   The ID of the file to be deleted.
-     * @return ResponseEntity containing the success DTO.
+     * @return ResponseEntity containing the SuccessDto.
      */
     @DeleteMapping("/delete")
-    public ResponseEntity<Success> delete(
+    public ResponseEntity<SuccessDto> delete(
             @RequestHeader("Authorization") String token,
             @RequestParam long folderId,
             @RequestParam long fileId) {
         long userId = jwtTokenUtil.getTokenUserId(token);
 
-        Success result = fileService.delete(userId, folderId, fileId);
+        SuccessDto result = fileService.delete(userId, folderId, fileId);
         return result.toResponseEntity();
     }
 

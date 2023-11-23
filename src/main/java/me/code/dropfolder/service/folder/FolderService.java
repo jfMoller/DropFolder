@@ -1,6 +1,6 @@
 package me.code.dropfolder.service.folder;
 
-import me.code.dropfolder.dto.Success;
+import me.code.dropfolder.dto.SuccessDto;
 import me.code.dropfolder.exception.type.CouldNotFindFolderException;
 import me.code.dropfolder.exception.type.CouldNotFindUserException;
 import me.code.dropfolder.exception.type.FolderCreationFailureException;
@@ -23,7 +23,7 @@ public class FolderService {
         this.userRepository = userRepository;
     }
 
-    public Success createFolder(long userId, String name) {
+    public SuccessDto createFolder(long userId, String name) {
         try {
             User user = loadUserById(userId);
             String uniqueName = getUniqueFolderName(user, name);
@@ -31,7 +31,7 @@ public class FolderService {
             Folder newFolder = new Folder(uniqueName, user);
             folderRepository.save(newFolder);
 
-            return new Success(HttpStatus.CREATED, "Successfully created a new folder with name: " + uniqueName);
+            return new SuccessDto(HttpStatus.CREATED, "Successfully created a new folder with name: " + uniqueName);
 
         } catch (Exception exception) {
             throw new FolderCreationFailureException(

@@ -1,7 +1,7 @@
 package me.code.dropfolder.exception.type;
 
 import lombok.Getter;
-import me.code.dropfolder.exception.dto.UploadErrorDetail;
+import me.code.dropfolder.exception.dto.detail.UploadErrorDetail;
 
 @Getter
 public class FileUploadFailureException extends RuntimeException {

@@ -1,7 +1,7 @@
 package me.code.dropfolder.controller;
 
 import me.code.dropfolder.dto.CreateFolderDto;
-import me.code.dropfolder.dto.Success;
+import me.code.dropfolder.dto.SuccessDto;
 import me.code.dropfolder.security.JwtTokenUtil;
 import me.code.dropfolder.service.folder.FolderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,10 +39,10 @@ public class FolderController {
      * @return ResponseEntity containing the success DTO.
      */
     @PostMapping("/create")
-    public ResponseEntity<Success> create(@RequestHeader("Authorization") String token, @RequestBody CreateFolderDto dto) {
+    public ResponseEntity<SuccessDto> create(@RequestHeader("Authorization") String token, @RequestBody CreateFolderDto dto) {
         long userId = jwtTokenUtil.getTokenUserId(token);
 
-        Success result = folderService.createFolder(userId, dto.name());
+        SuccessDto result = folderService.createFolder(userId, dto.name());
         return result.toResponseEntity();
     }
 

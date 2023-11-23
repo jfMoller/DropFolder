@@ -1,6 +1,6 @@
 package me.code.dropfolder.service.user;
 
-import me.code.dropfolder.exception.dto.ValidationErrorDetail;
+import me.code.dropfolder.exception.dto.detail.ValidationErrorDetail;
 import me.code.dropfolder.exception.type.NonUniqueValueException;
 import me.code.dropfolder.exception.type.PasswordValidationException;
 import me.code.dropfolder.exception.type.UsernameValidationException;
@@ -45,7 +45,7 @@ public class UserRegistrationValidator {
             String.format("The password must be between %s-%s characters long, and must include at least one uppercase letter",
                     PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH);
 
-    // Error detail messages; determines the message passed as part of the ValidationErrorDetail
+    // ErrorDto detail messages; determines the message passed as part of the ValidationErrorDetail
     private final static String INVALID_USERNAME_LENGTH_ERROR_MESSAGE =
             String.format("Must be between %s-%s characters long", USERNAME_MIN_LENGTH, USERNAME_MAX_LENGTH);
 

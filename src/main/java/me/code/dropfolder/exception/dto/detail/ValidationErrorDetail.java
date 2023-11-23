@@ -1,4 +1,4 @@
-package me.code.dropfolder.exception.dto;
+package me.code.dropfolder.exception.dto.detail;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,19 +15,9 @@ import lombok.Getter;
 @AllArgsConstructor
 public class ValidationErrorDetail extends ErrorDetail {
 
-    // The object associated with the validation error.
     private String targetObject;
-
-
-    // The field within the object that caused the validation error.
     private String targetField;
-
-
-    // The value that was rejected during validation.
     private Object rejectedValue;
-
-
-    // The error message describing the validation failure.
     private String message;
 
 }

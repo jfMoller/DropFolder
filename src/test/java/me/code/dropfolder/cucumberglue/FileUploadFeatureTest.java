@@ -5,7 +5,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import me.code.dropfolder.controller.LoginController;
-import me.code.dropfolder.dto.Success;
+import me.code.dropfolder.dto.SuccessDto;
 import me.code.dropfolder.dto.UserCredentialsDto;
 import me.code.dropfolder.model.File;
 import me.code.dropfolder.model.Folder;
@@ -57,7 +57,7 @@ public class FileUploadFeatureTest {
 
     @Given("the user has an account with username {string} and password {string}")
     public void theUserHasAnAccountWithUsernameAndPassword(String username, String password) {
-        ResponseEntity<Success> responseEntity = userService.registerUser(username, password).toResponseEntity();
+        ResponseEntity<SuccessDto> responseEntity = userService.registerUser(username, password).toResponseEntity();
         responseEntityStatus = (HttpStatus) responseEntity.getStatusCode();
 
         assertEquals(HttpStatus.CREATED, responseEntityStatus);
@@ -69,7 +69,7 @@ public class FileUploadFeatureTest {
 
     @Given("the user has a folder with name {string}")
     public void theUserHasAFolderWithName(String folderName) {
-        ResponseEntity<Success> responseEntity = folderService.createFolder(mockUser.getId(), folderName).toResponseEntity();
+        ResponseEntity<SuccessDto> responseEntity = folderService.createFolder(mockUser.getId(), folderName).toResponseEntity();
         responseEntityStatus = (HttpStatus) responseEntity.getStatusCode();
 
         assertEquals(HttpStatus.CREATED, responseEntityStatus);
@@ -82,7 +82,7 @@ public class FileUploadFeatureTest {
     @Given("the user is logged in with username {string} and password {string}")
     public void theUserIsLoggedInWithUsernameAndPassword(String username, String password) {
         UserCredentialsDto dto = new UserCredentialsDto(username, password);
-        ResponseEntity<Success> responseEntity = loginController.login(dto);
+        ResponseEntity<SuccessDto> responseEntity = loginController.login(dto);
         responseEntityStatus = (HttpStatus) responseEntity.getStatusCode();
 
         assertEquals(HttpStatus.OK, responseEntityStatus);
@@ -94,7 +94,7 @@ public class FileUploadFeatureTest {
         long folderId = mockFolder.getId();
         attachedMockFile = getMockFile(fileName);
 
-        ResponseEntity<Success> responseEntity = fileService.upload(userId, folderId, attachedMockFile).toResponseEntity();
+        ResponseEntity<SuccessDto> responseEntity = fileService.upload(userId, folderId, attachedMockFile).toResponseEntity();
         responseEntityStatus = (HttpStatus) responseEntity.getStatusCode();
 
         assertEquals(HttpStatus.CREATED, responseEntityStatus);

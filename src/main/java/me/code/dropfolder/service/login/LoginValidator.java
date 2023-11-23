@@ -1,7 +1,7 @@
 package me.code.dropfolder.service.login;
 
 import me.code.dropfolder.dto.UserCredentialsDto;
-import me.code.dropfolder.exception.dto.ValidationErrorDetail;
+import me.code.dropfolder.exception.dto.detail.ValidationErrorDetail;
 import me.code.dropfolder.exception.type.InvalidCredentialsException;
 import me.code.dropfolder.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

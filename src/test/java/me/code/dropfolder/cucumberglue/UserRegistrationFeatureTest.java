@@ -5,10 +5,10 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import jakarta.transaction.Transactional;
-import me.code.dropfolder.dto.Success;
+import me.code.dropfolder.dto.SuccessDto;
 import me.code.dropfolder.dto.UserCredentialsDto;
 import me.code.dropfolder.exception.GlobalExceptionHandler;
-import me.code.dropfolder.exception.dto.Error;
+import me.code.dropfolder.exception.dto.ErrorDto;
 import me.code.dropfolder.exception.type.PasswordValidationException;
 import me.code.dropfolder.exception.type.UsernameValidationException;
 import me.code.dropfolder.service.user.UserRegistrationValidator;
@@ -75,7 +75,7 @@ public class UserRegistrationFeatureTest {
     @When("the user submits the registration")
     public void theUserSubmitsTheRegistrationForm() {
         try {
-            ResponseEntity<Success> responseEntity =
+            ResponseEntity<SuccessDto> responseEntity =
                     userService.registerUser(userCredentialsDto.username(), userCredentialsDto.password()).toResponseEntity();
             responseEntityStatus = (HttpStatus) responseEntity.getStatusCode();
 
@@ -83,12 +83,12 @@ public class UserRegistrationFeatureTest {
 
         } catch (UsernameValidationException exception) {
             // Handles username formatting exception
-            ResponseEntity<Error> responseEntity = globalExceptionHandler.handleFormattingException(exception);
+            ResponseEntity<ErrorDto> responseEntity = globalExceptionHandler.handleFormattingException(exception);
             responseEntityStatus = (HttpStatus) responseEntity.getStatusCode();
 
         } catch (PasswordValidationException exception) {
             // Handles password formatting exception
-            ResponseEntity<Error> responseEntity = globalExceptionHandler.handleFormattingException(exception);
+            ResponseEntity<ErrorDto> responseEntity = globalExceptionHandler.handleFormattingException(exception);
             responseEntityStatus = (HttpStatus) responseEntity.getStatusCode();
         }
     }

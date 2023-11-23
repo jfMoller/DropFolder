@@ -1,6 +1,6 @@
 package me.code.dropfolder.service.user;
 
-import me.code.dropfolder.dto.Success;
+import me.code.dropfolder.dto.SuccessDto;
 import me.code.dropfolder.exception.type.*;
 import me.code.dropfolder.model.User;
 import me.code.dropfolder.repository.UserRepository;
@@ -37,7 +37,7 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public Success registerUser(String username, String password)
+    public SuccessDto registerUser(String username, String password)
             throws UsernameValidationException, PasswordValidationException,
             NonUniqueValueException, AccountRegistrationException {
 
@@ -50,7 +50,7 @@ public class UserService implements UserDetailsService {
         try {
             String encryptedPassword = passwordEncoder.encode(password);
             userRepository.save(new User(username, encryptedPassword));
-            return new Success(
+            return new SuccessDto(
                     HttpStatus.CREATED,
                     "Successfully registered a new account with username: " + username);
 

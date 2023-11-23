@@ -7,7 +7,10 @@ import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
 
-public class Success {
+/**
+ * Data Transfer Object (DTO) representing a success response.
+ */
+public class SuccessDto {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
     private LocalDateTime timestamp;
@@ -20,14 +23,25 @@ public class Success {
     @JsonProperty("message")
     private String message;
 
-    public Success(HttpStatus status, String message) {
+    /**
+     * Constructor for the SuccessDto class.
+     *
+     * @param status  The HTTP status of the success response.
+     * @param message The success message.
+     */
+    public SuccessDto(HttpStatus status, String message) {
         this.timestamp = LocalDateTime.now();
         this.success = true;
         this.status = status;
         this.message = message;
     }
 
-    public ResponseEntity<Success> toResponseEntity() {
+    /**
+     * Converts the SuccessDto to a ResponseEntity for use in the API responses.
+     *
+     * @return A ResponseEntity containing the SuccessDto.
+     */
+    public ResponseEntity<SuccessDto> toResponseEntity() {
         return ResponseEntity.status(this.status).body(this);
     }
 }

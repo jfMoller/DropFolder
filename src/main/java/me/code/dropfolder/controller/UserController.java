@@ -1,6 +1,6 @@
 package me.code.dropfolder.controller;
 
-import me.code.dropfolder.dto.Success;
+import me.code.dropfolder.dto.SuccessDto;
 import me.code.dropfolder.dto.UserCredentialsDto;
 import me.code.dropfolder.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,8 +34,8 @@ public class UserController {
      * @return A ResponseEntity containing the Success dto.
      */
     @PostMapping("/register")
-    public ResponseEntity<Success> signUp(@RequestBody UserCredentialsDto dto) {
-        Success result = userService.registerUser(dto.username(), dto.password());
+    public ResponseEntity<SuccessDto> signUp(@RequestBody UserCredentialsDto dto) {
+        SuccessDto result = userService.registerUser(dto.username(), dto.password());
         return result.toResponseEntity();
     }
 

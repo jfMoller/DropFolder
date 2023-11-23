@@ -1,7 +1,7 @@
 package me.code.dropfolder.controller;
 
-import me.code.dropfolder.dto.Auth;
-import me.code.dropfolder.dto.Success;
+import me.code.dropfolder.dto.AuthSuccessDto;
+import me.code.dropfolder.dto.SuccessDto;
 import me.code.dropfolder.dto.UserCredentialsDto;
 import me.code.dropfolder.exception.type.AuthenticationFailureException;
 import me.code.dropfolder.exception.type.InvalidCredentialsException;
@@ -63,11 +63,11 @@ public class LoginController {
      * @throws LoginFailureException if there is a failure in the login process.
      */
     @PostMapping("/login")
-    public ResponseEntity<Success> login(@RequestBody UserCredentialsDto dto) {
+    public ResponseEntity<SuccessDto> login(@RequestBody UserCredentialsDto dto) {
         try {
             authenticateUser(dto);
             String token = generateTokenForUser(dto);
-            return new Auth(HttpStatus.OK, "Login successful", token).toResponseEntity();
+            return new AuthSuccessDto(HttpStatus.OK, "Login successful", token).toResponseEntity();
 
         } catch (Exception exception) {
             validateCredentials(dto);

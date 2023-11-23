@@ -1,8 +1,8 @@
 package me.code.dropfolder.service.file;
 
 import jakarta.transaction.Transactional;
-import me.code.dropfolder.dto.Success;
-import me.code.dropfolder.exception.dto.UploadErrorDetail;
+import me.code.dropfolder.dto.SuccessDto;
+import me.code.dropfolder.exception.dto.detail.UploadErrorDetail;
 import me.code.dropfolder.exception.type.*;
 import me.code.dropfolder.model.File;
 import me.code.dropfolder.model.Folder;
@@ -30,7 +30,7 @@ public class FileService {
         this.userRepository = userRepository;
     }
 
-    public Success upload(long userId, long folderId, MultipartFile attachedFile) throws FileUploadFailureException {
+    public SuccessDto upload(long userId, long folderId, MultipartFile attachedFile) throws FileUploadFailureException {
         try {
             User requestingUser = loadUserById(userId);
             Folder targetFolder = loadFolderById(folderId);
@@ -42,7 +42,7 @@ public class FileService {
 
                 fileRepository.save(file);
 
-                return new Success(
+                return new SuccessDto(
                         HttpStatus.CREATED,
                         "Successfully uploaded a new file with name: " + file.getName());
             } else throw new CouldNotFindFolderException(
@@ -73,7 +73,7 @@ public class FileService {
         }
     }
 
-    public Success delete(long userId, long folderId, long fileId) throws FileUploadFailureException {
+    public SuccessDto delete(long userId, long folderId, long fileId) throws FileUploadFailureException {
         try {
             User requestingUser = loadUserById(userId);
             Folder targetFolder = loadFolderById(folderId);
@@ -83,7 +83,7 @@ public class FileService {
                     isFilePartOfTargetFolder(fileId, targetFolder)) {
                 fileRepository.deleteById(fileId);
 
-                return new Success(
+                return new SuccessDto(
                         HttpStatus.OK,
                         "Successfully deleted a file with id: {" + fileId + "}");
             } else throw new CouldNotFindFileException(
