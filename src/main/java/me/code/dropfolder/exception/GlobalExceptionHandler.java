@@ -1,5 +1,6 @@
 package me.code.dropfolder.exception;
 
+import jakarta.servlet.ServletException;
 import me.code.dropfolder.exception.dto.ErrorDto;
 import me.code.dropfolder.exception.dto.detail.*;
 import me.code.dropfolder.exception.type.*;
@@ -12,7 +13,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.io.IOException;
-import java.rmi.ServerException;
 
 /**
  * Global exception handler for handling and providing standardized responses for various exceptions.
@@ -55,7 +55,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      * @param exception The generic exception to be handled.
      * @return A ResponseEntity containing an ErrorDto with details about the exception.
      */
-    @ExceptionHandler({Exception.class, IOException.class, ServerException.class})
+    @ExceptionHandler({Exception.class, IOException.class, ServletException.class})
     public ResponseEntity<ErrorDto> handleException(Exception exception) {
         return buildResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, exception);
     }

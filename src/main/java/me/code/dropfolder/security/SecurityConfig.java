@@ -16,10 +16,21 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+/**
+ * Configuration class for defining security-related beans and settings.
+ */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
+    /**
+     * Configures the security filter chain for the system.
+     *
+     * @param security          The HttpSecurity object to configure.
+     * @param userDetailsService The UserDetailsService implementation for loading user details.
+     * @return The configured SecurityFilterChain.
+     * @throws Exception If an error occurs during configuration.
+     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity security, UserDetailsService userDetailsService) throws Exception {
         security.csrf(AbstractHttpConfigurer::disable)
@@ -29,6 +40,13 @@ public class SecurityConfig {
         return security.build();
     }
 
+    /**
+     * Configures the authentication provider for the system.
+     *
+     * @param userService The UserDetailsService implementation for loading user details.
+     * @param encoder     The PasswordEncoder implementation for encoding and verifying passwords.
+     * @return The configured AuthenticationProvider.
+     */
     @Bean
     public AuthenticationProvider authProvider(UserDetailsService userService, PasswordEncoder encoder) {
         var dao = new DaoAuthenticationProvider();
@@ -39,6 +57,16 @@ public class SecurityConfig {
         return dao;
     }
 
+
+    /**
+     * Creates the UserDetailsService bean for loading user details.
+     *
+     * @param userRepository            The repository for user data access.
+     * @param passwordEncoder           The PasswordEncoder implementation for encoding and verifying passwords.
+     * @param userRegistrationValidator The validator for user registration.
+     * @param jwtTokenUtil              The utility class for JWT token operations.
+     * @return The configured UserDetailsService bean.
+     */
     @Bean
     public UserDetailsService userDetailsService(
             UserRepository userRepository,
@@ -48,6 +76,11 @@ public class SecurityConfig {
         return new UserService(userRepository, passwordEncoder, userRegistrationValidator, jwtTokenUtil);
     }
 
+    /**
+     * Creates the PasswordEncoder bean for encoding and verifying passwords.
+     *
+     * @return The configured PasswordEncoder bean.
+     */
     @Bean
     public PasswordEncoder encoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
