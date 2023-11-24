@@ -13,6 +13,7 @@ import me.code.dropfolder.model.User;
 import me.code.dropfolder.service.file.FileService;
 import me.code.dropfolder.service.folder.FolderService;
 import me.code.dropfolder.service.user.UserService;
+import me.code.dropfolder.util.JpQueryUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
@@ -32,6 +33,7 @@ public class FileUploadFeatureTest {
     private final UserService userService;
     private final FolderService folderService;
     private final FileService fileService;
+    private final JpQueryUtil query;
 
     private HttpStatus responseEntityStatus;
     private User mockUser;
@@ -42,17 +44,19 @@ public class FileUploadFeatureTest {
             LoginController loginController,
             UserService userService,
             FolderService folderService,
-            FileService fileService) {
+            FileService fileService,
+            JpQueryUtil query) {
         this.loginController = loginController;
         this.userService = userService;
         this.folderService = folderService;
         this.fileService = fileService;
+        this.query = query;
 
     }
 
     @After("@cleanupUploadData")
     public void cleanUpMockData() {
-       userService.deleteUser(mockUser.getUsername());
+       query.deleteUser(mockUser.getUsername());
     }
 
     @Given("the user has an account with username {string} and password {string}")
@@ -75,7 +79,7 @@ public class FileUploadFeatureTest {
         assertEquals(HttpStatus.CREATED, responseEntityStatus);
 
         // Instantiate created folder for re-use
-        mockFolder = folderService.loadFolderByUserAndName(mockUser, folderName);
+        mockFolder = query.loadFolderByUserAndName(mockUser, folderName);
     }
 
 
@@ -105,11 +109,11 @@ public class FileUploadFeatureTest {
     @Then("the file should be uploaded successfully in the users folder")
     public void theFileShouldBeUploadedSuccessfully() {
         String mockFileName = attachedMockFile.getOriginalFilename();
-        File mockFile = fileService.loadFileByFolderAndName(mockFolder, mockFileName);
+        File mockFile = query.loadFileByFolderAndName(mockFolder, mockFileName);
 
         boolean isSuccessfulUpload =
-                fileService.isUserOwnerOfTargetFolder(mockUser, mockFolder.getId()) &&
-                        fileService.isFilePartOfTargetFolder(mockFile.getId(), mockFolder);
+                query.isUserOwnerOfTargetFolder(mockUser, mockFolder.getId()) &&
+                        query.isFilePartOfTargetFolder(mockFile.getId(), mockFolder);
 
         assertTrue(isSuccessfulUpload);
     }

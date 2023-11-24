@@ -13,6 +13,7 @@ import me.code.dropfolder.exception.type.PasswordValidationException;
 import me.code.dropfolder.exception.type.UsernameValidationException;
 import me.code.dropfolder.service.user.UserRegistrationValidator;
 import me.code.dropfolder.service.user.UserService;
+import me.code.dropfolder.util.JpQueryUtil;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,7 @@ public class UserRegistrationFeatureTest {
     private final GlobalExceptionHandler globalExceptionHandler;
     private final UserService userService;
     private final UserRegistrationValidator userRegistrationValidator;
+    private final JpQueryUtil query;
     private UserCredentialsDto userCredentialsDto;
     private HttpStatus responseEntityStatus;
 
@@ -38,10 +40,15 @@ public class UserRegistrationFeatureTest {
      * @param userService               handles user registration.
      * @param userRegistrationValidator handles validation of user credentials.
      */
-    public UserRegistrationFeatureTest(GlobalExceptionHandler globalExceptionHandler, UserService userService, UserRegistrationValidator userRegistrationValidator) {
+    public UserRegistrationFeatureTest(
+            GlobalExceptionHandler globalExceptionHandler,
+            UserService userService,
+            UserRegistrationValidator userRegistrationValidator,
+            JpQueryUtil query) {
         this.globalExceptionHandler = globalExceptionHandler;
         this.userService = userService;
         this.userRegistrationValidator = userRegistrationValidator;
+        this.query = query;
     }
 
     /**
@@ -50,7 +57,7 @@ public class UserRegistrationFeatureTest {
     @Transactional
     @After("@cleanupRegistrationData")
     public void cleanUpMockData() {
-        userService.deleteUser(userCredentialsDto.username());
+        query.deleteUser(userCredentialsDto.username());
     }
 
     /**

@@ -15,6 +15,7 @@ import me.code.dropfolder.model.User;
 import me.code.dropfolder.service.file.FileService;
 import me.code.dropfolder.service.folder.FolderService;
 import me.code.dropfolder.service.user.UserService;
+import me.code.dropfolder.util.JpQueryUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
@@ -33,6 +34,7 @@ public class FileDeletionFeatureTest {
     private final UserService userService;
     private final FolderService folderService;
     private final FileService fileService;
+    private final JpQueryUtil query;
 
     private HttpStatus responseEntityStatus;
     private User mockUser;
@@ -44,17 +46,19 @@ public class FileDeletionFeatureTest {
             LoginController loginController,
             UserService userService,
             FolderService folderService,
-            FileService fileService) {
+            FileService fileService,
+            JpQueryUtil query) {
         this.loginController = loginController;
         this.userService = userService;
         this.folderService = folderService;
         this.fileService = fileService;
+        this.query = query;
 
     }
 
     @After("@cleanupDeletionData")
     public void cleanUpMockData() {
-        userService.deleteUser(mockUser.getUsername());
+        query.deleteUser(mockUser.getUsername());
     }
 
     @Given("the user already has an account with username {string} and password {string}")
@@ -77,7 +81,7 @@ public class FileDeletionFeatureTest {
         assertEquals(HttpStatus.CREATED, responseEntityStatus);
 
         // Instantiate created folder for re-use
-        mockFolder = folderService.loadFolderByUserAndName(mockUser, folderName);
+        mockFolder = query.loadFolderByUserAndName(mockUser, folderName);
     }
 
     @Given("the user already has a file with name {string} in their folder with name {string}")
@@ -106,18 +110,18 @@ public class FileDeletionFeatureTest {
     @When("the user deletes the file with name {string}")
     public void theUserDeletesTheFileWithName(String fileName) {
         // Instantiate created file for re-use
-        mockFile = fileService.loadFileByFolderAndName(mockFolder, fileName);
+        mockFile = query.loadFileByFolderAndName(mockFolder, fileName);
 
-        fileService.deleteFile(fileName);
+        query.deleteFile(fileName);
 
-        assertThrows(CouldNotFindFileException.class, () -> fileService.loadFileByFolderAndName(mockFolder, fileName));
+        assertThrows(CouldNotFindFileException.class, () -> query.loadFileByFolderAndName(mockFolder, fileName));
     }
 
     @Then("the file should be successfully deleted from the users folder")
     public void theFileShouldBeSuccessfullyDeletedFromTheUsersFolder() {
         long mockFileId = mockFile.getId();
 
-        assertFalse(fileService.isFilePartOfTargetFolder(mockFileId, mockFolder));
+        assertFalse(query.isFilePartOfTargetFolder(mockFileId, mockFolder));
     }
 
     private MultipartFile getMockFile(String mockFileName) {
