@@ -26,7 +26,7 @@ public class SecurityConfig {
     /**
      * Configures the security filter chain for the system.
      *
-     * @param security          The HttpSecurity object to configure.
+     * @param security           The HttpSecurity object to configure.
      * @param userDetailsService The UserDetailsService implementation for loading user details.
      * @return The configured SecurityFilterChain.
      * @throws Exception If an error occurs during configuration.
@@ -64,16 +64,14 @@ public class SecurityConfig {
      * @param userRepository            The repository for user data access.
      * @param passwordEncoder           The PasswordEncoder implementation for encoding and verifying passwords.
      * @param userRegistrationValidator The validator for user registration.
-     * @param jwtTokenUtil              The utility class for JWT token operations.
      * @return The configured UserDetailsService bean.
      */
     @Bean
     public UserDetailsService userDetailsService(
             UserRepository userRepository,
             PasswordEncoder passwordEncoder,
-            UserRegistrationValidator userRegistrationValidator,
-            JwtTokenUtil jwtTokenUtil) {
-        return new UserService(userRepository, passwordEncoder, userRegistrationValidator, jwtTokenUtil);
+            UserRegistrationValidator userRegistrationValidator) {
+        return new UserService(userRepository, passwordEncoder, userRegistrationValidator);
     }
 
     /**

@@ -4,7 +4,6 @@ import me.code.dropfolder.dto.SuccessDto;
 import me.code.dropfolder.exception.type.*;
 import me.code.dropfolder.model.User;
 import me.code.dropfolder.repository.UserRepository;
-import me.code.dropfolder.security.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -12,8 +11,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -23,17 +20,14 @@ public class UserService implements UserDetailsService {
 
     private final UserRegistrationValidator userRegistrationValidator;
 
-    private final JwtTokenUtil jwtTokenUtil;
 
     @Autowired
     public UserService(UserRepository userRepository,
                        PasswordEncoder passwordEncoder,
-                       UserRegistrationValidator userRegistrationValidator,
-                       JwtTokenUtil jwtTokenUtil) {
+                       UserRegistrationValidator userRegistrationValidator) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.userRegistrationValidator = userRegistrationValidator;
-        this.jwtTokenUtil = jwtTokenUtil;
     }
 
     @Transactional
@@ -56,20 +50,6 @@ public class UserService implements UserDetailsService {
 
         } catch (Exception exception) {
             throw new AccountRegistrationException("Failed to register a new account: " + exception.getMessage());
-        }
-    }
-
-    public long getUserId(String username) {
-        Optional<Long> id = userRepository.findUserId(username);
-        if (id.isPresent()) {
-            return id.get();
-        } else return -1;
-    }
-
-    public void deleteUser(String username) {
-        long id = getUserId(username);
-        if (id != -1) {
-            userRepository.deleteById(id);
         }
     }
 
