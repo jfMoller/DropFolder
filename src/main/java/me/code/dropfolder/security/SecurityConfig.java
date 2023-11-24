@@ -3,6 +3,7 @@ package me.code.dropfolder.security;
 import me.code.dropfolder.repository.UserRepository;
 import me.code.dropfolder.service.user.UserRegistrationValidator;
 import me.code.dropfolder.service.user.UserService;
+import me.code.dropfolder.util.JpQueryUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -70,8 +71,9 @@ public class SecurityConfig {
     public UserDetailsService userDetailsService(
             UserRepository userRepository,
             PasswordEncoder passwordEncoder,
-            UserRegistrationValidator userRegistrationValidator) {
-        return new UserService(userRepository, passwordEncoder, userRegistrationValidator);
+            UserRegistrationValidator userRegistrationValidator,
+            JpQueryUtil query) {
+        return new UserService(userRepository, passwordEncoder, userRegistrationValidator, query);
     }
 
     /**

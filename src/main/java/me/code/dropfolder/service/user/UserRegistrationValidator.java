@@ -9,8 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * This class validates user credentials and throws exceptions
- * if any formatting or uniqueness errors are found.
+ * Validator class for validating user credentials during the user registration process.
+ * <p>
+ * This class checks the formatting and uniqueness of provided usernames and passwords
+ * and throws detailed validation error information.
  */
 @Component
 public class UserRegistrationValidator {
@@ -36,7 +38,7 @@ public class UserRegistrationValidator {
     private final static String NON_ALPHANUMERIC_REGEX = ".*[^a-zA-Z0-9].*";
     private final static String UPPERCASE_REGEX = ".*[A-Z].*";
 
-    // Exception error messages; determines the primary message passed as part of exceptions (currently username and password related exceptions)
+    // Exception error messages; determines the primary message passed as part of exceptions
     private final static String INVALID_USERNAME_ERROR_MESSAGE =
             String.format("The username must be between %s-%s characters long, and must not include non-alphanumeric characters",
                     USERNAME_MIN_LENGTH, USERNAME_MAX_LENGTH);
@@ -66,6 +68,11 @@ public class UserRegistrationValidator {
 
     private final UserRepository userRepository;
 
+    /**
+     * Constructs a new UserRegistrationValidator with the specified UserRepository dependency.
+     *
+     * @param userRepository The UserRepository used for validating user credentials.
+     */
     @Autowired
     public UserRegistrationValidator(UserRepository userRepository) {
         this.userRepository = userRepository;
