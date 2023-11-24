@@ -37,6 +37,15 @@ public class JpQueryUtil {
         return fileRepository.isFilePartOfFolder(fileId, folder);
     }
 
+    public boolean userIsNotOwnerOfTargetFolder(User user, Folder folder) {
+        return !isUserOwnerOfTargetFolder(user, folder.getId());
+    }
+
+    public boolean userIsNotOwnerOfTargetFile(User user, Folder targetFolder, File targetFile) {
+        return !isUserOwnerOfTargetFolder(user, targetFolder.getId()) &&
+                isFilePartOfTargetFolder(targetFile.getId(), targetFolder);
+    }
+
     public boolean folderHasExistingFileByName(Folder folder, String fileName) {
         return fileRepository.isPreexistingFile(folder, fileName);
     }

@@ -136,7 +136,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      * @param exception The authentication-related exception to be handled.
      * @return A ResponseEntity containing an ErrorDto with details about the authentication-related exception.
      */
-    @ExceptionHandler({InvalidTokenException.class, LoginFailureException.class, AuthenticationFailureException.class})
+    @ExceptionHandler({InvalidTokenException.class, LoginFailureException.class, AuthenticationFailureException.class, UnauthorizedFileOperationException.class})
     public ResponseEntity<ErrorDto> handleFailedAuthenticationException(Exception exception) {
         return buildResponseEntity(HttpStatus.UNAUTHORIZED, exception);
     }
