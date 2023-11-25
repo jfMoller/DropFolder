@@ -9,20 +9,21 @@ import me.code.dropfolder.dto.SuccessDto;
 import me.code.dropfolder.dto.UserCredentialsDto;
 import me.code.dropfolder.exception.GlobalExceptionHandler;
 import me.code.dropfolder.exception.dto.ErrorDto;
+import me.code.dropfolder.exception.type.CouldNotFindUserException;
 import me.code.dropfolder.exception.type.PasswordValidationException;
 import me.code.dropfolder.exception.type.UsernameValidationException;
 import me.code.dropfolder.service.user.UserRegistrationValidator;
 import me.code.dropfolder.service.user.UserService;
 import me.code.dropfolder.util.JpQueryUtil;
-import org.junit.jupiter.api.Assertions;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * This class contains step definitions for user registration scenarios in Cucumber tests.
+ * Cucumber test class for user registration scenarios.
+ * This class covers both successful and unsuccessful user registration scenarios,
+ * validating input credentials and handling exceptions appropriately.
  */
 public class UserRegistrationFeatureTest {
 
@@ -30,15 +31,21 @@ public class UserRegistrationFeatureTest {
     private final UserService userService;
     private final UserRegistrationValidator userRegistrationValidator;
     private final JpQueryUtil query;
-    private UserCredentialsDto userCredentialsDto;
+    private UserCredentialsDto mockCredentials;
     private HttpStatus responseEntityStatus;
 
     /**
-     * Constructor for UserRegistrationFeatureTest class.
+     * A constant used to set mock user credentials as null.
+     */
+    private static final String SET_AS_NULL_FLAG = "set_as_null";
+
+    /**
+     * Constructs a new instance of the {@code UserRegistrationFeatureTest} class.
      *
-     * @param globalExceptionHandler          handles for handling generic and specific runtime exceptions.
-     * @param userService               handles user registration.
-     * @param userRegistrationValidator handles validation of user credentials.
+     * @param globalExceptionHandler    An instance of {@code GlobalExceptionHandler} for handling exceptions.
+     * @param userService               An instance of {@code UserService} for user registration.
+     * @param userRegistrationValidator An instance of {@code UserRegistrationValidator} for validating user credentials.
+     * @param query                     An instance of {@code JpQueryUtil} for executing database queries.
      */
     public UserRegistrationFeatureTest(
             GlobalExceptionHandler globalExceptionHandler,
@@ -52,12 +59,12 @@ public class UserRegistrationFeatureTest {
     }
 
     /**
-     * Clean up method to delete mock user data after a scenario.
+     * Cleans up mock user data after the execution of scenarios tagged with "@cleanupRegistrationData".
      */
     @Transactional
     @After("@cleanupRegistrationData")
     public void cleanUpMockData() {
-        query.deleteUser(userCredentialsDto.username());
+        query.deleteUser(mockCredentials.username());
     }
 
     /**
@@ -66,43 +73,59 @@ public class UserRegistrationFeatureTest {
      * @param username The username for registration.
      * @param password The password for registration.
      */
-    @Given("a user provides valid registration credentials with username {string} and password {string}")
-    public void aUserProvidesValidRegistrationDetails(String username, String password) {
-        userCredentialsDto = new UserCredentialsDto(username, password);
+    @Given("the user provides valid registration credentials with username {string} and password {string}")
+    public void theUserProvidesValidRegistrationDetails(String username, String password) {
+        mockCredentials = new UserCredentialsDto(username, password);
 
-        Assertions.assertNotNull(userCredentialsDto);
-        Assertions.assertFalse(userRegistrationValidator.hasUsernameFormattingError(userCredentialsDto.username()));
-        Assertions.assertFalse(userRegistrationValidator.hasPasswordFormattingError(userCredentialsDto.password()));
+        boolean hasUsernameFormattingError =
+                userRegistrationValidator
+                        .hasUsernameFormattingError(mockCredentials.username());
+
+        boolean hasPasswordFormattingError =
+                userRegistrationValidator
+                        .hasPasswordFormattingError(mockCredentials.password());
+
+        assertNotNull(mockCredentials);
+        assertFalse(hasUsernameFormattingError);
+        assertFalse(hasPasswordFormattingError);
     }
 
     /**
-     * Step definition for submitting the registration form.
-     * It also handles exceptions related to username and password formatting.
+     * Step definition for submitting the registration.
+     * Handles exceptions related to username and password formatting.
      */
     @When("the user submits the registration")
-    public void theUserSubmitsTheRegistrationForm() {
+    public void theUserSubmitsTheRegistration() {
         try {
             ResponseEntity<SuccessDto> responseEntity =
-                    userService.registerUser(userCredentialsDto.username(), userCredentialsDto.password()).toResponseEntity();
+                    userService.registerUser(mockCredentials.username(), mockCredentials.password())
+                            .toResponseEntity();
+
+            assertNotNull(responseEntity.getStatusCode());
+            assertNotNull(responseEntity.getBody());
+            assertTrue(responseEntity.getBody().getSuccess());
+
             responseEntityStatus = (HttpStatus) responseEntity.getStatusCode();
 
-            Assertions.assertNotNull(responseEntityStatus);
+        } catch (UsernameValidationException | PasswordValidationException exception) {
+            ResponseEntity<ErrorDto> responseEntity =
+                    globalExceptionHandler.handleFormattingException(exception);
 
-        } catch (UsernameValidationException exception) {
-            // Handles username formatting exception
-            ResponseEntity<ErrorDto> responseEntity = globalExceptionHandler.handleFormattingException(exception);
-            responseEntityStatus = (HttpStatus) responseEntity.getStatusCode();
+            assertNotNull(responseEntity.getStatusCode());
+            assertNotNull(responseEntity.getBody());
+            assertTrue(responseEntity.getBody().getError());
 
-        } catch (PasswordValidationException exception) {
-            // Handles password formatting exception
-            ResponseEntity<ErrorDto> responseEntity = globalExceptionHandler.handleFormattingException(exception);
             responseEntityStatus = (HttpStatus) responseEntity.getStatusCode();
         }
     }
 
+    /**
+     * Step definition for asserting successful user registration.
+     */
     @Then("the user should be registered successfully")
     public void theUserShouldBeRegisteredSuccessfully() {
         assertEquals(HttpStatus.CREATED, responseEntityStatus);
+        assertDoesNotThrow(() -> userService.loadUserByUsername(mockCredentials.username()));
     }
 
     /**
@@ -111,35 +134,45 @@ public class UserRegistrationFeatureTest {
      * @param username The invalid username for registration.
      * @param password The invalid password for registration.
      */
-    @Given("a user provides invalid registration credentials with username {string} and password {string}")
-    public void aUserProvidesInvalidRegistrationDetailsWithUsernameAndPassword(String username, String password) {
+    @Given("the user provides invalid registration credentials with username {string} and password {string}")
+    public void theUserProvidesInvalidRegistrationDetailsWithUsernameAndPassword(String username, String password) {
         username = setAsNullIfFlagged(username);
         password = setAsNullIfFlagged(password);
 
-        userCredentialsDto = new UserCredentialsDto(username, password);
-        Assertions.assertNotNull(userCredentialsDto);
+        mockCredentials = new UserCredentialsDto(username, password);
+        assertNotNull(mockCredentials);
 
-        Assertions.assertTrue(
-                userRegistrationValidator.hasUsernameFormattingError(userCredentialsDto.username()) ||
-                        userRegistrationValidator.hasPasswordFormattingError(userCredentialsDto.password()));
+        boolean hasUsernameFormattingError =
+                userRegistrationValidator
+                        .hasUsernameFormattingError(mockCredentials.username());
+
+        boolean hasPasswordFormattingError =
+                userRegistrationValidator
+                        .hasPasswordFormattingError(mockCredentials.password());
+
+        assertTrue(hasUsernameFormattingError || hasPasswordFormattingError);
     }
 
     /**
      * Converts a specified string value to null if it is flagged as "set_as_null".
-     * Used as a workaround since null values can not be assigned as examples in Gherkin
+     * If the input string is not equal to "set_as_null", it returns the input string.
      *
-     * @param string The input string to be checked.
-     * @return The input string if it is not "set_as_null", otherwise returns null.
+     * @param string The input string to be checked for the "set_as_null" flag.
+     * @return Null if the input string is "set_as_null", otherwise returns the input string.
      */
     private String setAsNullIfFlagged(String string) {
-        if (string.equals("set_as_null")) {
+        if (string.equals(SET_AS_NULL_FLAG)) {
             return null;
         } else return string;
     }
 
+    /**
+     * Step definition for asserting failed user registration.
+     */
     @Then("the registration should fail")
     public void theRegistrationShouldFail() {
-        assertNotEquals(HttpStatus.OK, responseEntityStatus);
         assertNotEquals(HttpStatus.CREATED, responseEntityStatus);
+        assertThrows(CouldNotFindUserException.class,
+                () -> userService.loadUserByUsername(mockCredentials.username()));
     }
 }

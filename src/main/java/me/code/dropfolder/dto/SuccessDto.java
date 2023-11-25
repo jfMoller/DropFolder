@@ -2,6 +2,7 @@ package me.code.dropfolder.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 /**
  * Data Transfer Object (DTO) representing a success response.
  */
+@Getter
 public class SuccessDto {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
