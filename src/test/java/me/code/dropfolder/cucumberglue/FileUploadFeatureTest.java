@@ -1,18 +1,17 @@
 package me.code.dropfolder.cucumberglue;
 
 import io.cucumber.java.After;
+import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import me.code.dropfolder.controller.LoginController;
+import me.code.dropfolder.cucumberglue.util.CucumberMockUtil;
 import me.code.dropfolder.dto.SuccessDto;
-import me.code.dropfolder.dto.UserCredentialsDto;
 import me.code.dropfolder.model.File;
 import me.code.dropfolder.model.Folder;
 import me.code.dropfolder.model.User;
 import me.code.dropfolder.service.file.FileService;
 import me.code.dropfolder.service.folder.FolderService;
-import me.code.dropfolder.service.user.UserService;
 import me.code.dropfolder.util.JpQueryUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,11 +28,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class FileUploadFeatureTest {
 
-    private final LoginController loginController;
-    private final UserService userService;
     private final FolderService folderService;
     private final FileService fileService;
     private final JpQueryUtil query;
+    private final CucumberMockUtil mockUtil;
 
     private HttpStatus responseEntityStatus;
     private User mockUser;
@@ -41,58 +39,36 @@ public class FileUploadFeatureTest {
     private MultipartFile attachedMockFile;
 
     public FileUploadFeatureTest(
-            LoginController loginController,
-            UserService userService,
             FolderService folderService,
             FileService fileService,
-            JpQueryUtil query) {
-        this.loginController = loginController;
-        this.userService = userService;
+            JpQueryUtil query,
+            CucumberMockUtil mockUtil) {
         this.folderService = folderService;
         this.fileService = fileService;
         this.query = query;
+        this.mockUtil = mockUtil;
 
+    }
+
+    @Before("@setupUploadData")
+    public void setUpMockData() {
+        mockUser = mockUtil.createMockUser();
     }
 
     @After("@cleanupUploadData")
     public void cleanUpMockData() {
-       query.deleteUser(mockUser.getUsername());
-    }
-
-    @Given("the user has an account with username {string} and password {string}")
-    public void theUserHasAnAccountWithUsernameAndPassword(String username, String password) {
-        ResponseEntity<SuccessDto> responseEntity = userService.registerUser(username, password).toResponseEntity();
-        responseEntityStatus = (HttpStatus) responseEntity.getStatusCode();
-
-        assertEquals(HttpStatus.CREATED, responseEntityStatus);
-
-        // Instantiate registered mock user for re-use and post test deletion
-        mockUser = userService.loadUserByUsername(username);
-
+        query.deleteUser(mockUser.getUsername());
     }
 
     @Given("the user has a folder with name {string}")
     public void theUserHasAFolderWithName(String folderName) {
-        ResponseEntity<SuccessDto> responseEntity = folderService.createFolder(mockUser.getId(), folderName).toResponseEntity();
-        responseEntityStatus = (HttpStatus) responseEntity.getStatusCode();
+        mockFolder = mockUtil.createMockFolder(mockUser, folderName);
 
-        assertEquals(HttpStatus.CREATED, responseEntityStatus);
-
-        // Instantiate created folder for re-use
-        mockFolder = query.loadFolderByUserAndName(mockUser, folderName);
+        assertEquals(folderName, mockFolder.getName());
+        assertTrue(query.userHasExistingFolderByName(mockUser, folderName));
     }
 
-
-    @Given("the user is logged in with username {string} and password {string}")
-    public void theUserIsLoggedInWithUsernameAndPassword(String username, String password) {
-        UserCredentialsDto dto = new UserCredentialsDto(username, password);
-        ResponseEntity<SuccessDto> responseEntity = loginController.login(dto);
-        responseEntityStatus = (HttpStatus) responseEntity.getStatusCode();
-
-        assertEquals(HttpStatus.OK, responseEntityStatus);
-    }
-
-    @When("the user uploads a file with name {string} into her folder with name {string}")
+    @When("the user uploads a file with name {string} into their folder with name {string}")
     public void theUserUploadsAFileWithNameIntoHerFolderWithName(String fileName, String folderName) {
         long userId = mockUser.getId();
         long folderId = mockFolder.getId();
