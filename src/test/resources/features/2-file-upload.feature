@@ -5,7 +5,7 @@ Feature: File Upload
     @cleanupUploadData
   Scenario Outline: Successful file upload
     Given the user has a folder with name "<foldername>"
-    When the user uploads a file with name "<filename>" into their folder with name "<foldername>"
+    When the user uploads a file with name "<filename>" into their folder
     Then the file should be uploaded successfully in the users folder
 
     Examples:
