@@ -8,6 +8,7 @@ import me.code.dropfolder.dto.SuccessDto;
 import me.code.dropfolder.dto.UserCredentialsDto;
 import me.code.dropfolder.service.user.UserService;
 import me.code.dropfolder.util.JpQueryUtil;
+import me.code.dropfolder.util.MockDataFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -18,16 +19,18 @@ public class UserLoginFeatureTest {
     private final LoginController loginController;
     private final UserService userService;
     private final JpQueryUtil query;
+    private final MockDataFactory mock;
     private String mockUsername;
 
     public UserLoginFeatureTest(
             LoginController loginController,
             UserService userService,
-            JpQueryUtil query) {
+            JpQueryUtil query,
+            MockDataFactory mock) {
         this.loginController = loginController;
         this.userService = userService;
         this.query = query;
-
+        this.mock = mock;
     }
 
     @After("@cleanupLoginData")
@@ -48,8 +51,8 @@ public class UserLoginFeatureTest {
 
     @Then("the user successfully logs in with username {string} and password {string}")
     public void theUserLogsInWithUsernameAndPassword(String username, String password) {
-        var dto = new UserCredentialsDto(username, password);
-        ResponseEntity<SuccessDto> loginResult = loginController.login(dto);
+        UserCredentialsDto mockDto = mock.createMockCredentials(username, password);
+        ResponseEntity<SuccessDto> loginResult = loginController.login(mockDto);
 
         assertNotNull(loginResult);
         assertEquals(HttpStatus.OK, loginResult.getStatusCode());

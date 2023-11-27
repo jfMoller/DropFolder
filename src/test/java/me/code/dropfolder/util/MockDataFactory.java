@@ -1,5 +1,6 @@
 package me.code.dropfolder.util;
 
+import me.code.dropfolder.dto.UserCredentialsDto;
 import me.code.dropfolder.model.Folder;
 import me.code.dropfolder.model.User;
 import me.code.dropfolder.service.folder.FolderService;
@@ -30,8 +31,12 @@ public class MockDataFactory {
     }
 
     public User createMockUser() {
-        userService.registerUser("mockUser", "mockPassword").toResponseEntity();
-        return userService.loadUserByUsername("mockUser");
+        userService.registerUser("mockusername", "Mock_password").toResponseEntity();
+        return userService.loadUserByUsername("mockusername");
+    }
+
+    public UserCredentialsDto createMockCredentials(String username, String password) {
+        return new UserCredentialsDto(username, password);
     }
 
     public Folder createMockFolder(User mockUser, String folderName) {
