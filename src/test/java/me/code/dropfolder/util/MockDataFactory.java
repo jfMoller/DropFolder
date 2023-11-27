@@ -1,8 +1,10 @@
 package me.code.dropfolder.util;
 
 import me.code.dropfolder.dto.UserCredentialsDto;
+import me.code.dropfolder.model.File;
 import me.code.dropfolder.model.Folder;
 import me.code.dropfolder.model.User;
+import me.code.dropfolder.service.file.FileService;
 import me.code.dropfolder.service.folder.FolderService;
 import me.code.dropfolder.service.user.UserService;
 import org.springframework.mock.web.MockMultipartFile;
@@ -19,14 +21,17 @@ public class MockDataFactory {
 
     private final UserService userService;
     private final FolderService folderService;
+    private final FileService fileService;
     private final JpQueryUtil query;
 
     public MockDataFactory(
             UserService userService,
             FolderService folderService,
+            FileService fileService,
             JpQueryUtil query) {
         this.userService = userService;
         this.folderService = folderService;
+        this.fileService = fileService;
         this.query = query;
     }
 
@@ -47,6 +52,15 @@ public class MockDataFactory {
     public Folder createMockFolder(User mockUser, String folderName) {
         folderService.createFolder(mockUser.getId(), folderName).toResponseEntity();
         return query.loadFolderByUserAndName(mockUser, folderName);
+    }
+
+    public File createMockFile(long userId, long folderId, String fileName) {
+        MultipartFile attachedFile = getMockFile(fileName);
+        fileService.upload(userId, folderId, attachedFile);
+
+        Folder folderContainingFile = query.loadFolderById(folderId);
+
+        return query.loadFileByFolderAndName(folderContainingFile, fileName);
     }
 
     public MultipartFile getMockFile(String mockFileName) {
