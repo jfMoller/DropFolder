@@ -86,7 +86,7 @@ public class FileDeletionFeatureTest {
     public void theUserOwnsAFolderContainingAFileNamed(String fileName) {
         long userId = primaryMockUser.getId();
         long folderId = primaryMockFolder.getId();
-        MultipartFile attachedMockFile = mock.getMockFile(fileName);
+        MultipartFile attachedMockFile = mock.generateMockFile(fileName);
 
         ResponseEntity<SuccessDto> responseEntity =
                 fileService.upload(userId, folderId, attachedMockFile).toResponseEntity();

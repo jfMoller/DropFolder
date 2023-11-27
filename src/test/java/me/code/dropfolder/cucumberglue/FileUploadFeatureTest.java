@@ -98,7 +98,7 @@ public class FileUploadFeatureTest {
     public void theUserUploadsAFileWithNameIntoHerFolderWithName(String fileName) {
         long userId = primaryMockUser.getId();
         long folderId = primaryMockUsersFolder.getId();
-        attachedMockFile = mock.getMockFile(fileName);
+        attachedMockFile = mock.generateMockFile(fileName);
 
         ResponseEntity<SuccessDto> responseEntity =
                 fileService.upload(userId, folderId, attachedMockFile).toResponseEntity();
@@ -144,7 +144,7 @@ public class FileUploadFeatureTest {
     public void theUploadShouldFailIfAUserTriesToUploadAFileWithNameIntoAFolderThatTheyDoNotOwn(String fileName) {
         long nonOwnerUserId = secondaryMockUser.getId();
         long nonOwnedFolderId = primaryMockUsersFolder.getId();
-        attachedMockFile = mock.getMockFile(fileName);
+        attachedMockFile = mock.generateMockFile(fileName);
 
         assertThrows(FileUploadFailureException.class,
                 () -> fileService.upload(nonOwnerUserId, nonOwnedFolderId, attachedMockFile));
@@ -172,7 +172,7 @@ public class FileUploadFeatureTest {
     public void theUploadShouldFailIfAUserTriesToUploadAFileWithNameIntoANonExistingFolderWithId(String fileName, String id) {
         long userId = secondaryMockUser.getId();
         long nonExistingFolderId = Long.parseLong(id);
-        attachedMockFile = mock.getMockFile(fileName);
+        attachedMockFile = mock.generateMockFile(fileName);
 
         assertThrows(FileUploadFailureException.class,
                 () -> fileService.upload(userId, nonExistingFolderId, attachedMockFile));
