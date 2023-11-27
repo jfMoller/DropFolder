@@ -35,6 +35,11 @@ public class MockDataFactory {
         return userService.loadUserByUsername("mockusername");
     }
 
+    public User createMockUser(String username, String password) {
+        userService.registerUser(username, password).toResponseEntity();
+        return userService.loadUserByUsername(username);
+    }
+
     public UserCredentialsDto createMockCredentials(String username, String password) {
         return new UserCredentialsDto(username, password);
     }
@@ -57,4 +62,5 @@ public class MockDataFactory {
 
         return new MockMultipartFile(mockFileName, mockFileName, contentType, content);
     }
+
 }
