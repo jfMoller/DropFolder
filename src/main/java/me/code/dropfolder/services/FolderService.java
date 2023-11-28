@@ -1,6 +1,7 @@
 package me.code.dropfolder.services;
 
 import me.code.dropfolder.dtos.SuccessDto;
+import me.code.dropfolder.dtos.details.EntitySuccessDetail;
 import me.code.dropfolder.exceptions.dtos.details.FolderOperationErrorDetail;
 import me.code.dropfolder.exceptions.types.FolderCreationFailureException;
 import me.code.dropfolder.models.Folder;
@@ -54,7 +55,8 @@ public class FolderService {
             folderRepository.save(newFolder);
 
             return new SuccessDto(HttpStatus.CREATED,
-                    "Successfully created a new folder with name: " + newFolder.getName());
+                    "Successfully created a new folder",
+                    new EntitySuccessDetail(newFolder, "The folder that was created"));
 
         } catch (Exception exception) {
             throw new FolderCreationFailureException("Failed to new create folder",

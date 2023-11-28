@@ -1,6 +1,7 @@
 package me.code.dropfolder.services;
 
 import me.code.dropfolder.dtos.SuccessDto;
+import me.code.dropfolder.dtos.details.EntitySuccessDetail;
 import me.code.dropfolder.exceptions.types.AccountRegistrationException;
 import me.code.dropfolder.exceptions.types.CouldNotFindUserException;
 import me.code.dropfolder.models.User;
@@ -58,10 +59,13 @@ public class UserService implements UserDetailsService {
 
         try {
             String encryptedPassword = passwordEncoder.encode(password);
-            userRepository.save(new User(username, encryptedPassword));
+            User newUser = new User(username, encryptedPassword);
+            userRepository.save(newUser);
+
             return new SuccessDto(
                     HttpStatus.CREATED,
-                    "Successfully registered a new account with username: " + username);
+                    "Successfully registered a new account",
+                    new EntitySuccessDetail(newUser, "The user that was registered"));
 
         } catch (Exception exception) {
             throw new AccountRegistrationException("Failed to register a new account: " + exception.getMessage());

@@ -1,8 +1,8 @@
 package me.code.dropfolder.controllers;
 
-import me.code.dropfolder.dtos.AuthSuccessDto;
 import me.code.dropfolder.dtos.SuccessDto;
 import me.code.dropfolder.dtos.UserCredentialsDto;
+import me.code.dropfolder.dtos.details.AuthSuccessDetail;
 import me.code.dropfolder.exceptions.types.AuthenticationFailureException;
 import me.code.dropfolder.exceptions.types.InvalidCredentialsException;
 import me.code.dropfolder.exceptions.types.LoginFailureException;
@@ -67,7 +67,8 @@ public class LoginController {
         try {
             authenticateUser(dto);
             String token = generateTokenForUser(dto);
-            return new AuthSuccessDto(HttpStatus.OK, "Login successful", token).toResponseEntity();
+            return new SuccessDto(HttpStatus.OK, "Login successful",
+                    new AuthSuccessDetail(token)).toResponseEntity();
 
         } catch (Exception exception) {
             validateCredentials(dto);

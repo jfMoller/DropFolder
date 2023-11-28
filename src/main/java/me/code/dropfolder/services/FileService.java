@@ -2,6 +2,7 @@ package me.code.dropfolder.services;
 
 import jakarta.transaction.Transactional;
 import me.code.dropfolder.dtos.SuccessDto;
+import me.code.dropfolder.dtos.details.EntitySuccessDetail;
 import me.code.dropfolder.exceptions.dtos.details.FileOperationErrorDetail;
 import me.code.dropfolder.exceptions.dtos.details.FileUploadErrorDetail;
 import me.code.dropfolder.exceptions.types.*;
@@ -64,8 +65,8 @@ public class FileService {
 
             return new SuccessDto(
                     HttpStatus.CREATED,
-                    "Successfully uploaded a new file with name: {" + newFile.getName() + "}" +
-                            " and id: {" + newFile.getId() + "}");
+                    "Successfully uploaded a new file",
+                    new EntitySuccessDetail(newFile, "The file that was uploaded"));
 
         } catch (Exception exception) {
             throw new FileUploadFailureException("Failed to upload file",
@@ -158,11 +159,12 @@ public class FileService {
             File targetFile = query.loadFileById(fileId);
 
             checkUsersDeletePermission(requestingUser, targetFolder, targetFile);
-            fileRepository.deleteById(fileId);
+            fileRepository.deleteById(targetFile.getId());
 
             return new SuccessDto(
                     HttpStatus.OK,
-                    "Successfully deleted a file with id: {" + fileId + "}");
+                    "Successfully deleted a file",
+                    new EntitySuccessDetail(targetFile, "The file that was deleted"));
 
         } catch (Exception exception) {
             throw new FileDeletionFailureException("Failed to delete file",

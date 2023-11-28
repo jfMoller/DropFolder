@@ -3,13 +3,14 @@ package me.code.dropfolder.dtos;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
+import me.code.dropfolder.dtos.details.SuccessDetail;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
 
 /**
- * Data Transfer Object (DTO) representing a success response.
+ * A Data Transfer Object (DTO) representing a successful response.
  */
 @Getter
 public class SuccessDto {
@@ -22,20 +23,26 @@ public class SuccessDto {
 
     @JsonProperty("status")
     private HttpStatus status;
+
     @JsonProperty("message")
     private String message;
 
+    @JsonProperty("successDetails")
+    private SuccessDetail successDetails;
+
     /**
-     * Constructor for the SuccessDto class.
+     * Constructs a new SuccessDto with the specified status, message, and success details.
      *
-     * @param status  The HTTP status of the success response.
-     * @param message The success message.
+     * @param status         The HTTP status of the successful response.
+     * @param message        A message providing additional information about the successful response.
+     * @param successDetails Details about the success.
      */
-    public SuccessDto(HttpStatus status, String message) {
+    public SuccessDto(HttpStatus status, String message, SuccessDetail successDetails) {
         this.timestamp = LocalDateTime.now();
         this.success = true;
         this.status = status;
         this.message = message;
+        this.successDetails = successDetails;
     }
 
     /**
