@@ -7,8 +7,11 @@ import io.jsonwebtoken.security.Keys;
 import lombok.NoArgsConstructor;
 import me.code.dropfolder.model.User;
 import org.springframework.stereotype.Component;
+import org.yaml.snakeyaml.Yaml;
 
+import java.io.InputStream;
 import java.security.Key;
+import java.util.Map;
 
 /**
  * Utility class for handling JWT (JSON Web Token) operations, such as token generation, validation, and retrieval of claims.
@@ -17,11 +20,13 @@ import java.security.Key;
 @NoArgsConstructor
 public class JwtTokenUtil {
 
+    private static final String CONFIG_FILE = "secrets-config.yml";
+    private static final String JWT_SECRET = "jwt-secret";
+
     /**
      * Secret key used for JWT signing and validation.
-     * Currently exposed to facilitate ease of testing.
      */
-    private final String secret = "keyboardcat-fwjfw732842ndeADEUfui39429824jdmedwiaei";
+    private final String secret = getJwtSecret();
 
     /**
      * The cryptographic key derived from the secret for JWT operations.
@@ -101,5 +106,26 @@ public class JwtTokenUtil {
                 .parseClaimsJws(token)
                 .getBody();
         return claims.get(type, returnType);
+    }
+
+    /**
+     * Retrieves the JWT secret key from the configuration file.
+     * <p>
+     * This method reads the configuration file, specified by the constant {@code CONFIG_FILE},
+     * and extracts the JWT secret key from it.
+     * <p>
+     * The configuration file is expected to be in YAML format, and the key for the JWT secret
+     * is defined by the constant {@code JWT_SECRET}.
+     *
+     * @return The JWT secret key as a {@code String} if found in the configuration file,
+     * or {@code null} if the key is not present or an error occurs while reading the file.
+     * @see JwtTokenUtil#CONFIG_FILE
+     * @see JwtTokenUtil#JWT_SECRET
+     */
+    private String getJwtSecret() {
+        InputStream inputStream = JwtTokenUtil.class.getClassLoader().getResourceAsStream(CONFIG_FILE);
+        Map<String, String> config = new Yaml().load(inputStream);
+
+        return config.get(JWT_SECRET);
     }
 }

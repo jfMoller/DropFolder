@@ -55,7 +55,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      * @param exception The generic exception to be handled.
      * @return A ResponseEntity containing an ErrorDto with details about the exception.
      */
-    @ExceptionHandler({Exception.class, IOException.class, ServletException.class})
+    @ExceptionHandler({
+            Exception.class,
+            IOException.class,
+            ServletException.class})
     public ResponseEntity<ErrorDto> handleException(Exception exception) {
         return buildResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, exception);
     }
@@ -77,8 +80,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      * @param exception The validation exception to be handled.
      * @return A ResponseEntity containing an ErrorDto with details about the validation exception.
      */
-    @ExceptionHandler({UsernameValidationException.class, PasswordValidationException.class, NonUniqueValueException.class, InvalidCredentialsException.class})
-    public ResponseEntity<ErrorDto> handleFormattingException(ValidationException exception) {
+    @ExceptionHandler({
+            UsernameValidationException.class,
+            PasswordValidationException.class,
+            NonUniqueValueException.class,
+            InvalidCredentialsException.class})
+    public ResponseEntity<ErrorDto> handleValidationException(ValidationException exception) {
         ValidationErrorDetail validationError = exception.getValidationError();
         return buildResponseEntity(HttpStatus.CONFLICT, exception, validationError);
     }
@@ -89,7 +96,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      * @param exception The exception related to the unavailability of values or objects.
      * @return A ResponseEntity containing an ErrorDto with details about the exception.
      */
-    @ExceptionHandler({CouldNotFindUserException.class, CouldNotFindFolderException.class, CouldNotFindFileException.class})
+    @ExceptionHandler({
+            CouldNotFindUserException.class,
+            CouldNotFindFolderException.class,
+            CouldNotFindFileException.class})
     public ResponseEntity<ErrorDto> handleNotFoundException(Exception exception) {
         return buildResponseEntity(HttpStatus.NOT_FOUND, exception);
     }
@@ -100,7 +110,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      * @param exception The file operation exception to be handled.
      * @return A ResponseEntity containing an ErrorDto with details about the file operation exception.
      */
-    @ExceptionHandler({FileDownloadFailureException.class, FileDeletionFailureException.class})
+    @ExceptionHandler({
+            FileDownloadFailureException.class,
+            FileDeletionFailureException.class})
     public ResponseEntity<ErrorDto> handleFileOperationsFailureException(FileOperationException exception) {
         FileOperationErrorDetail operationError = exception.getFileOperationErrorDetail();
         return buildResponseEntity(HttpStatus.BAD_REQUEST, exception, operationError);
@@ -136,9 +148,23 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      * @param exception The authentication-related exception to be handled.
      * @return A ResponseEntity containing an ErrorDto with details about the authentication-related exception.
      */
-    @ExceptionHandler({InvalidTokenException.class, LoginFailureException.class, AuthenticationFailureException.class, UnauthorizedFileOperationException.class})
+    @ExceptionHandler({
+            InvalidTokenException.class,
+            LoginFailureException.class,
+            AuthenticationFailureException.class})
     public ResponseEntity<ErrorDto> handleFailedAuthenticationException(Exception exception) {
         return buildResponseEntity(HttpStatus.UNAUTHORIZED, exception);
+    }
+
+    /**
+     * Handles exceptions related to failed authorization and returns a ResponseEntity with an ErrorDto.
+     *
+     * @param exception The authorization-related exception to be handled.
+     * @return A ResponseEntity containing an ErrorDto with details about the authorization-related exception.
+     */
+    @ExceptionHandler({UnauthorizedFileOperationException.class})
+    public ResponseEntity<ErrorDto> handleFailedAuthorizationException(Exception exception) {
+        return buildResponseEntity(HttpStatus.FORBIDDEN, exception);
     }
 
 }

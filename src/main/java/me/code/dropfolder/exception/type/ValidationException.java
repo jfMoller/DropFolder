@@ -5,7 +5,7 @@ import me.code.dropfolder.exception.dto.detail.ValidationErrorDetail;
 
 /**
  * Base exception class for validation-related failures.
- * This exception is extended by more specific validation-related exceptions and contains details about the validation failure.
+ * This exception is extended by more specific validation-related exceptions and provides details about the validation failure.
  */
 @Getter
 public class ValidationException extends RuntimeException {

@@ -26,7 +26,7 @@ public class Folder {
     private String name;
 
     /**
-     * The user to whom the folder belongs.
+     * The user to whom the folder belongs, all folders have a column with "user_id".
      */
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -35,8 +35,8 @@ public class Folder {
     /**
      * The list of files contained in the folder.
      * <p>
-     * Important Note: Since each folder has a CascadeType.ALL association with its files,
-     * removing a user will result in the removal of all folders and files associated with that user.
+     * Important Note: Since each folder has a CascadeType.ALL & orphan removal association with its files,
+     * removing a folder will result in the removal of all files belonging to that folder.
      */
     @OneToMany(mappedBy = "folder", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<File> files;

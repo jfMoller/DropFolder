@@ -60,7 +60,7 @@ public class ErrorDto {
     }
 
     /**
-     * Converts the ErrorDto to a ResponseEntity for sending as an HTTP response.
+     * Converts the ErrorDto to a ResponseEntity for sending as an API response.
      *
      * @return A ResponseEntity containing the ErrorDto.
      */

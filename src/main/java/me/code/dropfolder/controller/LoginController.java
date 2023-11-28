@@ -40,7 +40,7 @@ public class LoginController {
      * @param authenticationProvider The authentication provider used for user authentication.
      * @param loginValidator         The validator ensuring the correctness of login credentials.
      * @param userService            The service managing user-related operations.
-     * @param jwtTokenUtil           The utility class handling JSON Web Tokens (JWTs) related to user authentication.
+     * @param jwtTokenUtil           The utility class handling JSON Web Tokens; related to user authentication.
      */
     @Autowired
     public LoginController(

@@ -36,14 +36,14 @@ public class File {
     private byte[] data;
 
     /**
-     * The folder to which the file belongs.
+     * The folder to which the file belongs, all files have a column with "folder_id".
      */
     @ManyToOne
     @JoinColumn(name = "folder_id")
     private Folder folder;
 
     /**
-     * Constructor for creating a File entity from a multipart file and associating it with a folder.
+     * Constructor for creating a File entity from a multipart file and connecting it to a folder.
      *
      * @param file   The multipart file from which to create the File entity.
      * @param folder The folder to which the file belongs.

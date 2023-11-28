@@ -35,6 +35,9 @@ public class User implements UserDetails {
 
     /**
      * A list of folders belonging to the user.
+     * <p>
+     * Important Note: Since each user has a CascadeType.ALL & orphan removal association with its folders,
+     * removing a user will result in the removal of all folders and by extension all files belonging to that user.
      */
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Folder> folders;
