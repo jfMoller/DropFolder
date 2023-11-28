@@ -62,13 +62,13 @@ public class FileUploadFeatureTest {
      */
     @Before("@setupUploadData")
     public void setUpMockData() {
-        primaryMockUser = mock.createMockUser();
+        primaryMockUser = mock.createMockUser("Mockuser1", "mockPassword2");
         secondaryMockUser = mock.createMockUser("MockUser2", "mockPassword2");
     }
 
     /**
      * Cleanup method annotated with {@code @After} to delete the mock user data after the test scenario.
-     * Note: Due to cascade relationships in the database, deleting a user will also delete all of that user's folders and files.
+     * Note: Due to entity relationship settings, deleting a user will also delete all of that user's folders and files.
      */
     @After("@cleanupUploadData")
     public void cleanUpMockData() {
@@ -143,11 +143,11 @@ public class FileUploadFeatureTest {
     @Then("the upload should fail if a user tries to upload a file with name {string} into a folder that they do not own")
     public void theUploadShouldFailIfAUserTriesToUploadAFileWithNameIntoAFolderThatTheyDoNotOwn(String fileName) {
         long nonOwnerUserId = secondaryMockUser.getId();
-        long nonOwnedFolderId = primaryMockUsersFolder.getId();
+        long notOwnedFolderId = primaryMockUsersFolder.getId();
         attachedMockFile = mock.generateMockFile(fileName);
 
         assertThrows(FileUploadFailureException.class,
-                () -> fileService.upload(nonOwnerUserId, nonOwnedFolderId, attachedMockFile));
+                () -> fileService.upload(nonOwnerUserId, notOwnedFolderId, attachedMockFile));
     }
 
     /**

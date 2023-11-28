@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Cucumber feature test class for file deletion scenarios.
- * Defines step definitions using Cucumber annotations to test the file deletion functionality with mock data.
+ * Defines step definitions using Cucumber annotations to test the file deletion with mock data.
  *
  * <p>
  * The class sets up and cleans up mock user data before and after test scenarios and defines step definitions
@@ -62,14 +62,14 @@ public class FileDeletionFeatureTest {
      */
     @Before("@setupDeletionData")
     public void setupMockData() {
-        primaryMockUser = mock.createMockUser();
+        primaryMockUser = mock.createMockUser("mockUser1", "Mockpassword");
         secondaryMockUser = mock.createMockUser("mockUser2", "Mockpassword");
         primaryMockFolder = mock.createMockFolder(primaryMockUser, "mock_folder");
     }
 
     /**
      * Cleanup method annotated with {@code @After} to delete the mock data after the test scenario.
-     * Note: Due to cascade relationships in the database, deleting a user will also delete all of that user's folders and files.
+     * Note: Due to entity relationship settings, deleting a user will also delete all of that user's folders and files.
      */
     @After("@cleanupDeletionData")
     public void cleanupMockData() {
@@ -94,7 +94,6 @@ public class FileDeletionFeatureTest {
         assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
         assertTrue(query.isUserOwnerOfTargetFolder(primaryMockUser, primaryMockFolder.getId()));
         assertTrue(query.folderHasExistingFileByName(primaryMockFolder, fileName));
-
     }
 
     /**
@@ -193,7 +192,7 @@ public class FileDeletionFeatureTest {
 
     /**
      * Step definition for the scenario where the deletion should fail if the user tries to delete
-     * a file with a specified ID in the folder that they own.
+     * a file with a non-existing ID in the folder that they own.
      *
      * @param id The ID of the non-existing file to be deleted by the user in their folder.
      */

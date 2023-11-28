@@ -4,7 +4,6 @@ import io.cucumber.java.After;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import jakarta.transaction.Transactional;
 import me.code.dropfolder.dtos.SuccessDto;
 import me.code.dropfolder.dtos.UserCredentialsDto;
 import me.code.dropfolder.exceptions.GlobalExceptionHandler;
@@ -22,8 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Cucumber test class for user registration scenarios.
- * This class covers both successful and unsuccessful user registration scenarios,
- * validating input credentials and handling exceptions appropriately.
+ * This class covers both successful and unsuccessful user registration scenarios.
  */
 public class UserRegistrationFeatureTest {
 
@@ -61,7 +59,6 @@ public class UserRegistrationFeatureTest {
     /**
      * Cleans up mock user data after the execution of scenarios tagged with "@cleanupRegistrationData".
      */
-    @Transactional
     @After("@cleanupRegistrationData")
     public void cleanUpMockData() {
         query.deleteUser(mockCredentials.username());

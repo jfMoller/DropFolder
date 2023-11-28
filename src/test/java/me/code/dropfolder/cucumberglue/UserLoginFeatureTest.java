@@ -54,7 +54,7 @@ public class UserLoginFeatureTest {
      */
     @After("@cleanupLoginData")
     public void cleanUpMockData() {
-        query.deleteUser(this.mockUsername);
+        query.deleteUser(mockUsername);
     }
 
     /**
@@ -108,7 +108,6 @@ public class UserLoginFeatureTest {
      *
      * @param validUsername   The valid username for login attempt.
      * @param invalidPassword The invalid password for login attempt.
-     * @throws InvalidCredentialsException Thrown if the login attempt with the provided credentials is invalid.
      */
     @Then("the user can not log in with a valid username {string} and an invalid valid password {string}")
     public void theUserCanNotLogInWithAValidUsernameAndAnInvalidValidPassword(String validUsername, String invalidPassword) {
@@ -123,7 +122,6 @@ public class UserLoginFeatureTest {
      *
      * @param invalidUsername The invalid username for login attempt.
      * @param validPassword   The valid password for login attempt.
-     * @throws InvalidCredentialsException Thrown if the login attempt with the provided credentials is invalid.
      */
     @And("the user can not log in with an invalid username {string} and a valid password {string}")
     public void theUserCanNotLogInWithAnInvalidUsernameAndAValidPassword(String invalidUsername, String validPassword) {
@@ -149,7 +147,6 @@ public class UserLoginFeatureTest {
      *
      * @param username The non-registered username for login attempt.
      * @param password The non-registered password for login attempt.
-     * @throws InvalidCredentialsException Thrown if the login attempt with the provided credentials is invalid.
      */
     @Then("the user can not log in with a non-registered username {string} and a non-registered password {string}")
     public void theUserCanNotLogInWithANonRegisteredUsernameAndANonRegisteredPassword(String username, String password) {

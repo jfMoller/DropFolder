@@ -5,13 +5,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 /**
  * Configuration class for running Spring Boot tests with Cucumber.
- * It sets up the testing environment with a real embedded web server and assigns a random port.
+ * <p>
+ * This class is annotated with {@code @SpringBootTest} to indicate that it is a Spring Boot test
+ * and to configure the web environment with a random port.
+ * The {@code @CucumberContextConfiguration} annotation provides the context configuration for Cucumber tests,
+ * allowing Spring Boot to integrate with Cucumber for testing.
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-/**
- * Provides the context configuration for Cucumber tests.
- * This allows Spring Boot to integrate with Cucumber for testing.
- */
 @CucumberContextConfiguration
 public class CucumberSpringConfiguration {
 }
