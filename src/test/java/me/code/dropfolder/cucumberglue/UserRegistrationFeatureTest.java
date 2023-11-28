@@ -5,16 +5,16 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import jakarta.transaction.Transactional;
-import me.code.dropfolder.dto.SuccessDto;
-import me.code.dropfolder.dto.UserCredentialsDto;
-import me.code.dropfolder.exception.GlobalExceptionHandler;
-import me.code.dropfolder.exception.dto.ErrorDto;
-import me.code.dropfolder.exception.type.CouldNotFindUserException;
-import me.code.dropfolder.exception.type.PasswordValidationException;
-import me.code.dropfolder.exception.type.UsernameValidationException;
-import me.code.dropfolder.service.user.UserRegistrationValidator;
-import me.code.dropfolder.service.user.UserService;
-import me.code.dropfolder.util.JpQueryUtil;
+import me.code.dropfolder.dtos.SuccessDto;
+import me.code.dropfolder.dtos.UserCredentialsDto;
+import me.code.dropfolder.exceptions.GlobalExceptionHandler;
+import me.code.dropfolder.exceptions.dtos.ErrorDto;
+import me.code.dropfolder.exceptions.types.CouldNotFindUserException;
+import me.code.dropfolder.exceptions.types.PasswordValidationException;
+import me.code.dropfolder.exceptions.types.UsernameValidationException;
+import me.code.dropfolder.services.UserRegistrationValidator;
+import me.code.dropfolder.services.UserService;
+import me.code.dropfolder.utils.JpQueryUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -109,7 +109,7 @@ public class UserRegistrationFeatureTest {
 
         } catch (UsernameValidationException | PasswordValidationException exception) {
             ResponseEntity<ErrorDto> responseEntity =
-                    globalExceptionHandler.handleFormattingException(exception);
+                    globalExceptionHandler.handleValidationException(exception);
 
             assertNotNull(responseEntity.getStatusCode());
             assertNotNull(responseEntity.getBody());

@@ -5,7 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
-import me.code.dropfolder.exception.type.InvalidTokenException;
+import me.code.dropfolder.exceptions.types.InvalidTokenException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -42,7 +42,7 @@ public class JwtValidationFilter extends OncePerRequestFilter {
      * @param response            The servlet response.
      * @param securityFilterChain The filter chain for security.
      * @throws ServletException      If an error occurs during servlet processing.
-     * @throws IOException           If an I/O exception occurs.
+     * @throws IOException           If an I/O exceptions occurs.
      * @throws InvalidTokenException If the provided token is not valid
      */
     @Override
@@ -91,8 +91,8 @@ public class JwtValidationFilter extends OncePerRequestFilter {
      * @param filterChain The filter chain to be continued.
      * @param request     The servlet request.
      * @param response    The servlet response.
-     * @throws ServletException If an exception occurs during servlet processing.
-     * @throws IOException      If an I/O exception occurs.
+     * @throws ServletException If an exceptions occurs during servlet processing.
+     * @throws IOException      If an I/O exceptions occurs.
      */
     private void continueFilterChain(
             FilterChain filterChain,
@@ -124,8 +124,8 @@ public class JwtValidationFilter extends OncePerRequestFilter {
      * @param filterChain The filter chain to be continued.
      * @param request     The servlet request.
      * @param response    The servlet response.
-     * @throws ServletException If an exception occurs during servlet processing.
-     * @throws IOException      If an I/O exception occurs.
+     * @throws ServletException If an exceptions occurs during servlet processing.
+     * @throws IOException      If an I/O exceptions occurs.
      */
     private void continueFilterChainWithAuthentication(
             String token,
@@ -162,15 +162,15 @@ public class JwtValidationFilter extends OncePerRequestFilter {
     /**
      * Handles exceptions that may occur during the filter chain processing.
      *
-     * @param exception The exception to be handled.
-     * @throws ServletException If the exception is a ServletException.
-     * @throws IOException      If the exception is an IOException.
+     * @param exception The exceptions to be handled.
+     * @throws ServletException If the exceptions is a ServletException.
+     * @throws IOException      If the exceptions is an IOException.
      */
     private void handleFilterChainException(Exception exception) throws ServletException, IOException {
         if (exception instanceof ServletException) {
-            throw new ServletException("Servlet exception: " + exception.getMessage());
+            throw new ServletException("Servlet exceptions: " + exception.getMessage());
         } else if (exception instanceof IOException) {
-            throw new IOException("IO exception: " + exception.getMessage());
+            throw new IOException("IO exceptions: " + exception.getMessage());
         }
     }
 }

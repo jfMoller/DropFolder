@@ -4,14 +4,14 @@ import io.cucumber.java.After;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
-import me.code.dropfolder.controller.LoginController;
-import me.code.dropfolder.dto.SuccessDto;
-import me.code.dropfolder.dto.UserCredentialsDto;
-import me.code.dropfolder.exception.type.CouldNotFindUserException;
-import me.code.dropfolder.exception.type.InvalidCredentialsException;
-import me.code.dropfolder.service.user.UserService;
-import me.code.dropfolder.util.JpQueryUtil;
-import me.code.dropfolder.util.MockDataFactory;
+import me.code.dropfolder.controllers.LoginController;
+import me.code.dropfolder.dtos.SuccessDto;
+import me.code.dropfolder.dtos.UserCredentialsDto;
+import me.code.dropfolder.exceptions.types.CouldNotFindUserException;
+import me.code.dropfolder.exceptions.types.InvalidCredentialsException;
+import me.code.dropfolder.services.UserService;
+import me.code.dropfolder.utils.JpQueryUtil;
+import me.code.dropfolder.utils.MockDataFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -32,8 +32,8 @@ public class UserLoginFeatureTest {
     /**
      * Constructor for initializing the UserLoginFeatureTest class.
      *
-     * @param loginController The login controller used for user login operations.
-     * @param userService     The user service responsible for user-related actions.
+     * @param loginController The login controllers used for user login operations.
+     * @param userService     The user services responsible for user-related actions.
      * @param query           The JpQueryUtil used for querying user data.
      * @param mock            The MockDataFactory used for creating mock data.
      */

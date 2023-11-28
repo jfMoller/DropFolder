@@ -1,9 +1,9 @@
 package me.code.dropfolder.security;
 
-import me.code.dropfolder.repository.UserRepository;
-import me.code.dropfolder.service.user.UserRegistrationValidator;
-import me.code.dropfolder.service.user.UserService;
-import me.code.dropfolder.util.JpQueryUtil;
+import me.code.dropfolder.repositories.UserRepository;
+import me.code.dropfolder.services.UserRegistrationValidator;
+import me.code.dropfolder.services.UserService;
+import me.code.dropfolder.utils.JpQueryUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -61,7 +61,7 @@ public class SecurityConfig {
     /**
      * Creates the UserDetailsService bean for loading user details.
      *
-     * @param userRepository            The repository for user data access.
+     * @param userRepository            The repositories for user data access.
      * @param passwordEncoder           The PasswordEncoder implementation for encoding and verifying passwords.
      * @param userRegistrationValidator The validator for user registration.
      * @return The configured UserDetailsService bean.

@@ -5,15 +5,15 @@ import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import me.code.dropfolder.dto.SuccessDto;
-import me.code.dropfolder.exception.type.CouldNotFindFolderException;
-import me.code.dropfolder.exception.type.FileUploadFailureException;
-import me.code.dropfolder.model.File;
-import me.code.dropfolder.model.Folder;
-import me.code.dropfolder.model.User;
-import me.code.dropfolder.service.file.FileService;
-import me.code.dropfolder.util.JpQueryUtil;
-import me.code.dropfolder.util.MockDataFactory;
+import me.code.dropfolder.dtos.SuccessDto;
+import me.code.dropfolder.exceptions.types.CouldNotFindFolderException;
+import me.code.dropfolder.exceptions.types.FileUploadFailureException;
+import me.code.dropfolder.models.File;
+import me.code.dropfolder.models.Folder;
+import me.code.dropfolder.models.User;
+import me.code.dropfolder.services.FileService;
+import me.code.dropfolder.utils.JpQueryUtil;
+import me.code.dropfolder.utils.MockDataFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
@@ -44,7 +44,7 @@ public class FileUploadFeatureTest {
     /**
      * Constructor for the FileUploadFeatureTest class.
      *
-     * @param fileService The file service used for file-related operations.
+     * @param fileService The file services used for file-related operations.
      * @param query       The JpQueryUtil used for querying data.
      * @param mock        The MockDataFactory used for creating mock data.
      */

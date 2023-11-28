@@ -5,7 +5,7 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.NoArgsConstructor;
-import me.code.dropfolder.model.User;
+import me.code.dropfolder.models.User;
 import org.springframework.stereotype.Component;
 import org.yaml.snakeyaml.Yaml;
 
@@ -94,10 +94,10 @@ public class JwtTokenUtil {
      * Retrieves a specific claim from the given JWT.
      *
      * @param token      The JWT from which to extract the claim.
-     * @param type       The type of claim to retrieve.
-     * @param returnType The class type of the expected return value.
-     * @param <T>        The generic type of the return value.
-     * @return The claim value of the specified type.
+     * @param type       The types of claim to retrieve.
+     * @param returnType The class types of the expected return value.
+     * @param <T>        The generic types of the return value.
+     * @return The claim value of the specified types.
      */
     public <T> T getTokenClaim(String token, String type, Class<T> returnType) {
         Claims claims = Jwts.parserBuilder()
