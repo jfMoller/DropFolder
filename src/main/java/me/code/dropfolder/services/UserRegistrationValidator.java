@@ -267,7 +267,7 @@ public class UserRegistrationValidator {
                                 : doesNotContainUppercase(value) ? NO_UPPERCASE_ERROR_MESSAGE
                                 : UNKNOWN_FIELD_ERROR_MESSAGE;
             }
-            default -> throw new IllegalArgumentException("Invalid types: " + type);
+            default -> throw new IllegalArgumentException("Invalid type: " + type);
         }
 
         return new ValidationErrorDetail("user", field, value, errorMessage);

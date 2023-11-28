@@ -1,11 +1,11 @@
 ### About this project:
-Graded assignment. Building a file storage app with Java Spring & NeonDB.
+Graded assignment. Building a file storage app with Java Spring & NeonDB (Postgres).
 
 ### How to run locally:
 * Download the project
-* Follow the steps laid out in 'src/main/resources/CONNECTION-README.md'
+* Add the provided spring.datasource.url to the application.properties file
 * Run Application.java.
 
 ### How to run Cucumber tests:
-cd src/test/java/me/code/dropfolder
+* Set up the database connection
 * Run CucumberTestRunner.java.
