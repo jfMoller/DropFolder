@@ -25,13 +25,14 @@ public class JwtValidationFilter extends OncePerRequestFilter {
     private final JwtTokenUtil jwtTokenUtil;
 
     /**
-     * Constructs a JwtValidationFilter with the specified UserDetailsService.
+     * Constructs a new JwtValidationFilter with the provided JwtTokenUtil and UserDetailsService.
      *
-     * @param userDetailsService The service for loading user details based on the provided token.
+     * @param jwtTokenUtil       The JwtTokenUtil instance for JWT-related operations.
+     * @param userDetailsService The UserDetailsService implementation to retrieve user details for token validation.
      */
-    public JwtValidationFilter(UserDetailsService userDetailsService) {
+    public JwtValidationFilter(JwtTokenUtil jwtTokenUtil, UserDetailsService userDetailsService) {
+        this.jwtTokenUtil = jwtTokenUtil;
         this.userDetailsService = userDetailsService;
-        this.jwtTokenUtil = new JwtTokenUtil();
     }
 
     /**

@@ -25,7 +25,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     /**
-     * Configures the security filter chain for the system.
+     * Configures the security filter chain for the application.
      *
      * @param security           The HttpSecurity object to configure.
      * @param userDetailsService The UserDetailsService implementation for loading user details.
@@ -33,16 +33,16 @@ public class SecurityConfig {
      * @throws Exception If an error occurs during configuration.
      */
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity security, UserDetailsService userDetailsService) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity security, UserDetailsService userDetailsService, JwtTokenUtil jwtTokenUtil) throws Exception {
         security.csrf(AbstractHttpConfigurer::disable)
-                .addFilterAfter(new JwtValidationFilter(userDetailsService), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(new JwtValidationFilter(jwtTokenUtil, userDetailsService), UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(authorize -> authorize.requestMatchers("/api/user/register", "/api/login").permitAll()
                         .anyRequest().authenticated());
         return security.build();
     }
 
     /**
-     * Configures the authentication provider for the system.
+     * Configures the authentication provider for the application.
      *
      * @param userService The UserDetailsService implementation for loading user details.
      * @param encoder     The PasswordEncoder implementation for encoding and verifying passwords.
@@ -57,7 +57,6 @@ public class SecurityConfig {
 
         return dao;
     }
-
 
     /**
      * Creates the UserDetailsService bean for loading user details.
