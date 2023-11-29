@@ -1,5 +1,5 @@
 ### About this project
-A graded assignment focused on building a file storage API; the project was built using Java Spring and Postgres, and includes Spring Security as well as Cucumber integration testing.
+Graded assignment. Building a file storage API with Java Spring and Postgres, including Spring Security and Cucumber integration tests.
 
 ### How to run locally
 1. **Download the Project:**
@@ -14,8 +14,8 @@ A graded assignment focused on building a file storage API; the project was buil
     - Execute the `Application.java` file to start the application.
 
 ### How to run Cucumber tests
-1. **Database Setup:**
-    - Ensure the database connection is properly configured.
+1. **Configure Test Database Connection:**
+   - Add the provided (test) `spring.datasource.url` to the `application-test.properties` file.
 
 
 2. **Run Cucumber Tests:**
@@ -26,7 +26,7 @@ A graded assignment focused on building a file storage API; the project was buil
 **User registration**
 ```
 Method: POST
-Endpoint: http://localhost:8080/api/products/all
+Endpoint: http://localhost:8080/api/user/register
 Body (JSON): {"username": "example_username", "password": "example_password"}
 ```
 **User login**

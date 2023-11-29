@@ -2,15 +2,16 @@ package me.code.dropfolder.cucumberglue;
 
 import io.cucumber.spring.CucumberContextConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
 /**
  * Configuration class for running Spring Boot tests with Cucumber.
  * <p>
- * This class is annotated with {@code @SpringBootTest} to indicate that it is a Spring Boot test
- * and to configure the web environment with a random port.
- * The {@code @CucumberContextConfiguration} annotation provides the context configuration for Cucumber tests,
- * allowing Spring Boot to integrate with Cucumber for testing.
+ * Uses {@code @TestPropertySource} to set up and connect to the test database.
+ * Configures the web environment with a random port using {@code @SpringBootTest}.
+ * {@code @CucumberContextConfiguration} allows Spring Boot to integrate with Cucumber for testing.
  */
+@TestPropertySource("classpath:application-test.properties")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @CucumberContextConfiguration
 public class CucumberSpringConfiguration {
